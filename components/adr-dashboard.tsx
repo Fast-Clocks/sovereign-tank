@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Shield, AlertTriangle, CheckCircle, Loader2, Globe, Users, Clock, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SovereignGlassBox } from '@/components/sovereign-glass-box'
+import { LegalFooter } from '@/components/legal-footer'
 
 type BrokerStatus = 'exposed' | 'purging' | 'clear'
 
@@ -280,21 +281,29 @@ export function ADRDashboard() {
                     </div>
                   </div>
 
-                  <Button
-                    asChild
-                    size="lg"
-                    className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-mono text-lg h-14"
-                  >
-                    <a 
-                      href="https://buy.stripe.com/test_28o2bJbGL13a8IU7ss" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center"
+                  <div className="space-y-3">
+                    <Button
+                      asChild
+                      size="lg"
+                      className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-mono text-lg h-14"
                     >
-                      <Zap className="mr-2 h-5 w-5" />
-                      INITIATE FULL SYSTEM PURGE
-                    </a>
-                  </Button>
+                      <a 
+                        href="https://buy.stripe.com/test_28o2bJbGL13a8IU7ss" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center"
+                      >
+                        <Zap className="mr-2 h-5 w-5" />
+                        INITIATE FULL SYSTEM PURGE
+                      </a>
+                    </Button>
+                    
+                    <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-lg p-3">
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Payment processed securely via Stripe. By proceeding, you agree to our <a href="/terms" className="text-yellow-500 hover:underline">Terms of Service</a> and acknowledge our <a href="/privacy-policy" className="text-yellow-500 hover:underline">Privacy Policy</a>. Services subject to Australian Consumer Law guarantees. Prices in AUD.
+                      </p>
+                    </div>
+                  </div>
 
                   {scanningRegion && (
                     <div className="text-center">
@@ -550,60 +559,7 @@ export function ADRDashboard() {
           <SovereignGlassBox />
         </div>
 
-        <footer className="mt-12 border-t border-border bg-card/50 rounded-lg p-8">
-          <div className="mb-8 pb-8 border-b border-border/50">
-            <h4 className="text-sm font-semibold text-foreground font-mono tracking-wider mb-4">A NOTE FROM THE FOUNDER</h4>
-            <blockquote className="space-y-4">
-              <p className="text-sm text-muted-foreground leading-relaxed italic">
-                "I spent my life in kitchens and on ships where you learn one thing fast: you're only as good as your word and your work. 
-                I built Australian Data Removal because I saw too many people getting exploited by data brokers and having no way to fight back.
-              </p>
-              <p className="text-sm text-muted-foreground leading-relaxed italic">
-                This isn't a fancy tech startup. It's an industrial tool built for the Founding 500—the first 500 people who need their 
-                digital sovereignty back. We identify the threats, we issue the statutory demands, and we don't stop until the job is done. 
-                No jargon, no bullshit. Just doing right by the people who deserve a win."
-              </p>
-              <footer className="text-sm text-foreground font-medium not-italic">
-                — Chris Robinson
-              </footer>
-            </blockquote>
-          </div>
-          
-          <div className="grid gap-8 md:grid-cols-2">
-            <div className="space-y-3">
-              <h4 className="text-sm font-semibold text-foreground font-mono tracking-wider">MISSION STATEMENT</h4>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                ADR is committed to Digital Sovereignty. We identify and protect those who deserve a win against the data-broker ecosystem.
-              </p>
-            </div>
-            <div className="space-y-3">
-              <h4 className="text-sm font-semibold text-foreground font-mono tracking-wider">STATUTORY AUTHORITY</h4>
-              <div className="space-y-2">
-                <a 
-                  href="https://www.legislation.gov.au/C2004A03712/latest/text"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-primary hover:text-primary/80 underline underline-offset-4 block"
-                >
-                  Privacy Act 1988 (Cth) - APP 11.2
-                </a>
-                <p className="text-xs text-muted-foreground font-mono">
-                  Version: v1.0.0-PROD
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="mt-6 pt-6 border-t border-border/50 space-y-3">
-            <div className="text-center">
-              <p className="text-xs text-primary font-mono tracking-wider">
-                [ 0x_SOVEREIGN_ENGINE_STATUS: OPERATIONAL // NODE: AU-WEST-1 ]
-              </p>
-            </div>
-            <p className="text-xs text-muted-foreground text-center font-mono">
-              © 2025 Australian Data Removal • Sovereign Node: Western Australia • All Rights Reserved
-            </p>
-          </div>
-        </footer>
+        <LegalFooter />
       </main>
     </div>
   )

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
+import { DataCollectionNotice } from '@/components/data-collection-notice'
 
 import './globals.css'
 
@@ -7,8 +8,8 @@ const _inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const _jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains' })
 
 export const metadata: Metadata = {
-  title: 'Sovereignty Lab | Hardware-Bound Security',
-  description: 'Premium cybersecurity protocols with hardware-bound attestation and government portal integration.',
+  title: 'Australian Data Removal | Privacy Protection Services',
+  description: 'Programmatic enforcement of your digital privacy rights across Australian and global data brokers in compliance with the Privacy Act 1988 (Cth).',
 }
 
 export const viewport: Viewport = {
@@ -22,7 +23,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${_inter.variable} ${_jetbrainsMono.variable}`}>
-      <body className="font-sans antialiased min-h-screen">{children}</body>
+      <body className="font-sans antialiased min-h-screen">
+        {children}
+        <DataCollectionNotice />
+      </body>
     </html>
   )
 }
