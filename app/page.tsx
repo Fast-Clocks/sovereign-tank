@@ -86,6 +86,7 @@ export default function UnifiedApp() {
         ) : (
           <SovereigntyLabView />
         )}
+      </div>
     </div>
   )
 }
