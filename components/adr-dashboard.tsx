@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Shield, AlertTriangle, CheckCircle, Loader2, Globe, Users, Clock, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { SovereignGlassBox } from '@/components/sovereign-glass-box'
 
 type BrokerStatus = 'exposed' | 'purging' | 'clear'
 
@@ -542,6 +543,11 @@ export function ADRDashboard() {
           <div className="mt-3 text-xs text-muted-foreground font-mono text-center">
             Just Software • Programmatic Enforcement • No Human Intervention Required
           </div>
+        </div>
+
+        {/* Sovereign Glass Box - Session Tracking */}
+        <div className="mt-8">
+          <SovereignGlassBox />
         </div>
 
         <footer className="mt-12 border-t border-border bg-card/50 rounded-lg p-8">
