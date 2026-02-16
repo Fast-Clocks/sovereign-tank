@@ -1,6 +1,7 @@
 'use client'
 
 import { ShieldCheck, Cpu, Lock, Globe, Zap, CheckCircle2, AlertTriangle, FileText } from "lucide-react"
+import { SovereignGlassBox } from "@/components/sovereign-glass-box"
 
 export default function SovereigntyLab() {
   return (
@@ -78,6 +79,11 @@ export default function SovereigntyLab() {
               </p>
             </div>
           </div>
+        </div>
+
+        {/* Sovereign Glass Box */}
+        <div className="mt-8 sm:mt-10 lg:mt-12">
+          <SovereignGlassBox />
         </div>
 
         {/* Australian Legal Compliance Security Check */}
