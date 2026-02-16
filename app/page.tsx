@@ -1,23 +1,112 @@
-'use client'
+import { ShieldCheck, Cpu, Lock, Globe, Zap } from "lucide-react"
 
-import dynamic from 'next/dynamic'
-import { Shield } from 'lucide-react'
+export default function SovereigntyLab() {
+  return (
+    <div className="min-h-screen bg-black text-white p-8 font-sans">
+      <div className="max-w-6xl mx-auto">
+        {/* Header Section */}
+        <header className="text-center mb-16 space-y-4">
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter italic uppercase">
+            Sovereignty Lab
+          </h1>
+          <div className="flex items-center justify-center space-x-4 text-zinc-500 tracking-[0.3em] text-xs font-bold">
+            <span>INNOVATOR</span>
+            <span className="h-1 w-1 bg-zinc-700 rounded-full" />
+            <span>TRUSTED PARTNER</span>
+            <span className="h-1 w-1 bg-zinc-700 rounded-full" />
+            <span>EST. 2026</span>
+          </div>
+        </header>
 
-const ADRDashboard = dynamic(
-  () => import('@/components/adr-dashboard').then(mod => ({ default: mod.ADRDashboard })),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Shield className="h-16 w-16 text-primary mx-auto animate-pulse" />
-          <p className="text-muted-foreground font-mono">Initializing Global Sovereign Tank...</p>
+        {/* Main Interface Grid */}
+        <div className="grid md:grid-cols-2 gap-8 items-stretch">
+          
+          {/* Left: The Apex Spec Sheet */}
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-10 flex flex-col justify-between hover:border-zinc-700 transition-colors">
+            <div>
+              <div className="flex items-center space-x-2 mb-6">
+                <div className="h-3 w-3 bg-red-600 rounded-full animate-pulse" />
+                <span className="text-red-500 font-mono text-xs font-bold">PREMIUM: SOVEREIGN APEX</span>
+              </div>
+              <h2 className="text-3xl font-bold mb-4">Hardware-Bound Handshake</h2>
+              <p className="text-zinc-400 leading-relaxed mb-8">
+                Moving beyond cloud security. This protocol anchors your data session to your <strong>physical hardware</strong> and verifies identity through <strong>Australian Government Portals (ASIC/myGov)</strong>.
+              </p>
+              
+              <div className="space-y-4">
+                {[
+                  { icon: <Cpu className="w-5 h-5" />, text: "Hardware-Bound Attestation" },
+                  { icon: <Globe className="w-5 h-5" />, text: "myGov / ASIC Handshake Integration" },
+                  { icon: <Zap className="w-5 h-5" />, text: "Zero-Persistence Ephemeral Memory" },
+                  { icon: <ShieldCheck className="w-5 h-5" />, text: "Insured Sovereignty Guarantee" }
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center space-x-4 p-3 bg-white/5 rounded-xl border border-white/5">
+                    <span className="text-yellow-500">{item.icon}</span>
+                    <span className="text-sm font-semibold">{item.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="mt-12 pt-6 border-t border-zinc-800 text-[10px] text-zinc-600 font-mono">
+              ATI-SEC PROTOCOL: AES-256 GCM | BILATERAL LOCK v2.6.01
+            </div>
+          </div>
+
+          {/* Right: The Action Center */}
+          <div className="flex flex-col gap-8">
+            <div className="bg-gradient-to-br from-zinc-800 to-black p-10 rounded-3xl border border-zinc-700 shadow-2xl">
+              <h3 className="text-2xl font-bold mb-4 italic">Government Briefing</h3>
+              <p className="text-zinc-400 mb-8">
+                Are your systems laggy or unsafe? Submit a Vulnerability Brief. Our fund is ready to point the cannon at your biggest data headaches.
+              </p>
+              <button className="w-full bg-white text-black font-black py-4 rounded-xl uppercase tracking-widest hover:bg-zinc-200 transition-all active:scale-95">
+                Submit Vulnerability Brief
+              </button>
+            </div>
+
+            {/* Mobile App Teaser */}
+            <div className="bg-blue-900/10 border border-blue-900/30 rounded-3xl p-8">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="h-2 w-2 bg-blue-500 rounded-full shadow-[0_0_10px_#3b82f6]" />
+                <span className="text-blue-500 font-mono text-xs font-bold uppercase tracking-tighter">App Status: In Production</span>
+              </div>
+              <p className="text-zinc-400 text-sm leading-relaxed">
+                Finalizing World-First <strong>Hardware-Locked Mobile Handshake</strong>. Deploying advanced encryption layers for Q2 2026.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* The 5% Fund Ledger - Scrolling Ticker */}
+        <div className="mt-12 bg-zinc-900/80 border border-zinc-800 rounded-full py-4 px-8 overflow-hidden relative">
+          <div className="flex items-center animate-scroll">
+            <p className="text-sm whitespace-nowrap flex items-center">
+              <span className="text-yellow-500 font-bold mr-2">GLOBAL ADVOCACY FUND:</span>
+              <span className="text-zinc-300">5% of revenue automatically diverted to International Data Research.</span>
+              <span className="ml-4 text-green-500 font-mono font-bold tracking-widest uppercase text-xs">Status: Active</span>
+              <span className="mx-8 text-zinc-700">•</span>
+              <span className="text-yellow-500 font-bold mr-2">GLOBAL ADVOCACY FUND:</span>
+              <span className="text-zinc-300">5% of revenue automatically diverted to International Data Research.</span>
+              <span className="ml-4 text-green-500 font-mono font-bold tracking-widest uppercase text-xs">Status: Active</span>
+            </p>
+          </div>
         </div>
       </div>
-    ),
-  }
-)
 
-export default function Page() {
-  return <ADRDashboard />
+      <style jsx>{`
+        @keyframes scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        .animate-scroll {
+          animation: scroll 30s linear infinite;
+        }
+      `}</style>
+    </div>
+  )
 }

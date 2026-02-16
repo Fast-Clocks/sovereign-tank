@@ -7,12 +7,12 @@ const _inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const _jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains' })
 
 export const metadata: Metadata = {
-  title: 'ADR Sovereign Tank | Australian Data Removal',
-  description: 'Programmatic enforcement of your digital privacy rights across Australian data brokers.',
+  title: 'Sovereignty Lab | Hardware-Bound Security',
+  description: 'Premium cybersecurity protocols with hardware-bound attestation and government portal integration.',
 }
 
 export const viewport: Viewport = {
-  themeColor: '#0a0f1a',
+  themeColor: '#000000',
 }
 
 export default function RootLayout({
