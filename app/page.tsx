@@ -79,30 +79,13 @@ export default function UnifiedApp() {
         </div>
       </nav>
 
-      {/* Main Content Area with slide transition */}
+      {/* Main Content Area */}
       <div className="pt-16">
-        <div 
-          className="transition-all duration-500 ease-in-out"
-          style={{
-            transform: currentView === 'dashboard' ? 'translateX(0)' : 'translateX(-100%)',
-            opacity: currentView === 'dashboard' ? 1 : 0,
-            display: currentView === 'dashboard' ? 'block' : 'none',
-          }}
-        >
+        {currentView === 'dashboard' ? (
           <ADRDashboard />
-        </div>
-
-        <div 
-          className="transition-all duration-500 ease-in-out"
-          style={{
-            transform: currentView === 'sovereign' ? 'translateX(0)' : 'translateX(100%)',
-            opacity: currentView === 'sovereign' ? 1 : 0,
-            display: currentView === 'sovereign' ? 'block' : 'none',
-          }}
-        >
+        ) : (
           <SovereigntyLabView />
-        </div>
-      </div>
+        )}
     </div>
   )
 }
