@@ -256,34 +256,39 @@ export function ADRDashboard() {
   const totalPages = Math.ceil(allBrokers.length / brokersPerPage) || 1
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Shield className="h-8 w-8 text-primary" />
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Australian Data Removal</h1>
-              <p className="text-xs text-muted-foreground font-mono">Programmatic Enforcement Engine</p>
+    <div className="min-h-screen bg-black">
+      <header className="border-b border-zinc-900 bg-black/95 backdrop-blur-md sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Shield className="h-6 w-6 text-yellow-500" />
+              <div>
+                <h2 className="text-base font-black text-white tracking-tight">AUSTRALIAN DATA REMOVAL</h2>
+                <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">Sovereign.Privacy.Protocol v2.6</p>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-primary/10 border border-primary/20">
-              <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-xs font-mono text-primary">Node: Western Australia</span>
-            </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-emerald-500/10 border border-emerald-500/20">
-              <CheckCircle className="h-4 w-4 text-emerald-500" />
-              <span className="text-xs font-mono text-emerald-500">Status: Secure</span>
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-yellow-500/10 border border-yellow-500/20">
+                <div className="h-1.5 w-1.5 rounded-full bg-yellow-500 animate-pulse" />
+                <span className="text-[10px] font-mono font-bold text-yellow-500 tracking-wider">AU-WEST-NODE</span>
+              </div>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20">
+                <CheckCircle className="h-3 w-3 text-emerald-500" />
+                <span className="text-[10px] font-mono font-bold text-emerald-500 tracking-wider">OPERATIONAL</span>
+              </div>
+              <div className="px-2.5 py-1 bg-zinc-900 border border-zinc-800">
+                <span className="text-[10px] font-mono text-zinc-400 tracking-wider">{new Date().toISOString().split('T')[0]}</span>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-6">
-            <div className="rounded-lg border border-border bg-card p-6">
+      <main className="container mx-auto px-4 py-6">
+        <div className="grid gap-4 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-4">
+            <div className="border border-zinc-900 bg-zinc-950 p-6">
               <div className="flex flex-col md:flex-row items-center gap-8">
                 <div className="relative">
                   <svg className="w-48 h-48 transform -rotate-90">
@@ -310,47 +315,41 @@ export function ADRDashboard() {
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-5xl font-bold text-foreground">{privacyScore}%</span>
-                    <span className="text-xs text-muted-foreground font-mono mt-1">PRIVACY SCORE</span>
+                    <span className="text-5xl font-black text-white">{privacyScore}%</span>
+                    <span className="text-[10px] text-zinc-600 font-mono mt-1 tracking-widest">PRIVACY.SCORE</span>
                   </div>
                 </div>
 
                 <div className="flex-1 w-full space-y-4">
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="space-y-1 text-center">
-                      <p className="text-xs text-muted-foreground font-mono">EXPOSED</p>
-                      <p className="text-2xl font-bold text-destructive">{exposedCount.toLocaleString()}</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1 text-center bg-zinc-900/50 border border-zinc-900 p-3">
+                      <p className="text-[10px] text-zinc-500 font-mono font-bold tracking-wider">EXPOSED</p>
+                      <p className="text-2xl font-black text-red-500">{exposedCount.toLocaleString()}</p>
                     </div>
-                    <div className="space-y-1 text-center">
-                      <p className="text-xs text-muted-foreground font-mono">PURGING</p>
-                      <p className="text-2xl font-bold text-amber-500">{purgingCount.toLocaleString()}</p>
+                    <div className="space-y-1 text-center bg-zinc-900/50 border border-zinc-900 p-3">
+                      <p className="text-[10px] text-zinc-500 font-mono font-bold tracking-wider">PURGING</p>
+                      <p className="text-2xl font-black text-amber-500">{purgingCount.toLocaleString()}</p>
                     </div>
-                    <div className="space-y-1 text-center">
-                      <p className="text-xs text-muted-foreground font-mono">CLEAR</p>
-                      <p className="text-2xl font-bold text-emerald-500">{clearCount.toLocaleString()}</p>
+                    <div className="space-y-1 text-center bg-zinc-900/50 border border-zinc-900 p-3">
+                      <p className="text-[10px] text-zinc-500 font-mono font-bold tracking-wider">CLEAR</p>
+                      <p className="text-2xl font-black text-emerald-500">{clearCount.toLocaleString()}</p>
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <Button
-                      asChild
-                      size="lg"
-                      className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-mono text-lg h-14"
+                  <div className="space-y-2">
+                    <a
+                      href="https://buy.stripe.com/test_28o2bJbGL13a8IU7ss" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full bg-yellow-500 hover:bg-yellow-400 text-black font-black py-3.5 font-mono text-sm tracking-widest transition-all active:scale-95 border-2 border-yellow-600"
                     >
-                      <a 
-                        href="https://buy.stripe.com/test_28o2bJbGL13a8IU7ss" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center"
-                      >
-                        <Zap className="mr-2 h-5 w-5" />
-                        INITIATE FULL SYSTEM PURGE
-                      </a>
-                    </Button>
+                      <Zap className="h-4 w-4" />
+                      [INITIATE.FULL.PURGE]
+                    </a>
                     
-                    <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-lg p-3">
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        Payment processed securely via Stripe. By proceeding, you agree to our <a href="/terms" className="text-yellow-500 hover:underline">Terms of Service</a> and acknowledge our <a href="/privacy-policy" className="text-yellow-500 hover:underline">Privacy Policy</a>. Services subject to Australian Consumer Law guarantees. Prices in AUD.
+                    <div className="bg-zinc-900/50 border border-zinc-800 p-2.5">
+                      <p className="text-[10px] text-zinc-500 leading-relaxed font-mono">
+                        Payment via Stripe. By proceeding: <a href="/terms" className="text-yellow-500 hover:underline">Terms</a> + <a href="/privacy-policy" className="text-yellow-500 hover:underline">Privacy</a>. ACL protected. AUD.
                       </p>
                     </div>
                   </div>
@@ -385,51 +384,51 @@ export function ADRDashboard() {
 
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-muted/50">
-                    <tr className="text-xs font-mono text-muted-foreground">
-                      <th className="px-6 py-3 text-left font-medium">BROKER NAME</th>
-                      <th className="px-6 py-3 text-left font-medium">DATA EXPOSED</th>
-                      <th className="px-6 py-3 text-left font-medium">REGION</th>
-                      <th className="px-6 py-3 text-center font-medium">STATUS</th>
-                      <th className="px-6 py-3 text-center font-medium">ACTION</th>
+                  <thead className="bg-zinc-900/80 border-b border-zinc-800">
+                    <tr className="text-[10px] font-mono text-zinc-500 font-bold tracking-wider">
+                      <th className="px-4 py-2 text-left">BROKER.NAME</th>
+                      <th className="px-4 py-2 text-left">DATA.EXPOSED</th>
+                      <th className="px-4 py-2 text-left">REGION</th>
+                      <th className="px-4 py-2 text-center">STATUS</th>
+                      <th className="px-4 py-2 text-center">ACTION</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border">
+                  <tbody className="divide-y divide-zinc-900">
                     {displayedBrokers.map((broker, idx) => (
-                      <tr key={`${broker.name}-${idx}`} className="hover:bg-muted/30 transition-colors">
-                        <td className="px-6 py-4 font-medium text-foreground">{broker.name}</td>
-                        <td className="px-6 py-4">
+                      <tr key={`${broker.name}-${idx}`} className="hover:bg-zinc-900/30 transition-colors">
+                        <td className="px-4 py-3 font-mono text-xs font-semibold text-white">{broker.name}</td>
+                        <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-1">
                             {broker.dataExposed.map((data) => (
                               <span
                                 key={data}
-                                className="px-2 py-0.5 rounded text-xs bg-muted text-muted-foreground border border-border"
+                                className="px-1.5 py-0.5 text-[10px] bg-zinc-900 text-zinc-400 border border-zinc-800 font-mono"
                               >
                                 {data}
                               </span>
                             ))}
                           </div>
                         </td>
-                        <td className="px-6 py-4">
-                          <span className="text-sm text-muted-foreground font-mono">{broker.region}</span>
+                        <td className="px-4 py-3">
+                          <span className="text-xs text-zinc-400 font-mono">{broker.region}</span>
                         </td>
-                        <td className="px-6 py-4 text-center">
+                        <td className="px-4 py-3 text-center">
                           {broker.status === 'exposed' && (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-destructive/10 text-destructive border border-destructive/20">
-                              <AlertTriangle className="h-3 w-3" />
-                              Exposed
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold font-mono bg-red-500/10 text-red-500 border border-red-500/30">
+                              <AlertTriangle className="h-2.5 w-2.5" />
+                              EXPOSED
                             </span>
                           )}
                           {broker.status === 'purging' && (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                              <Loader2 className="h-3 w-3 animate-spin" />
-                              Purging
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold font-mono bg-amber-500/10 text-amber-500 border border-amber-500/30">
+                              <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                              PURGING
                             </span>
                           )}
                           {broker.status === 'clear' && (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                              <CheckCircle className="h-3 w-3" />
-                              Clear
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold font-mono bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">
+                              <CheckCircle className="h-2.5 w-2.5" />
+                              CLEAR
                             </span>
                           )}
                         </td>

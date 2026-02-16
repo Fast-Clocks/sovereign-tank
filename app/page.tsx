@@ -13,66 +13,79 @@ export default function UnifiedApp() {
   return (
     <div className="min-h-screen bg-background">
       {/* Top Navigation Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md border-b border-zinc-800/50">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-8">
-              <h1 className="text-lg font-bold text-foreground font-mono">ADR COMMAND CENTER</h1>
+          <div className="flex items-center justify-between h-14">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 bg-yellow-500 rounded-full animate-pulse" />
+                <h1 className="text-sm font-black text-white font-mono tracking-wider">ADR.COMMAND</h1>
+              </div>
               
               {/* Desktop Menu */}
-              <div className="hidden md:flex items-center gap-2">
-                <Button
-                  variant={currentView === 'dashboard' ? 'default' : 'ghost'}
+              <div className="hidden md:flex items-center gap-1">
+                <button
                   onClick={() => setCurrentView('dashboard')}
-                  className="font-mono"
+                  className={`px-4 py-1.5 text-xs font-bold font-mono tracking-wider transition-all ${
+                    currentView === 'dashboard' 
+                      ? 'bg-yellow-500 text-black' 
+                      : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+                  }`}
                 >
-                  Dashboard
-                </Button>
-                <Button
-                  variant={currentView === 'sovereign' ? 'default' : 'ghost'}
+                  [DASHBOARD]
+                </button>
+                <button
                   onClick={() => setCurrentView('sovereign')}
-                  className="font-mono"
+                  className={`px-4 py-1.5 text-xs font-bold font-mono tracking-wider transition-all ${
+                    currentView === 'sovereign' 
+                      ? 'bg-yellow-500 text-black' 
+                      : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+                  }`}
                 >
-                  Sovereign Lab
-                </Button>
+                  [SOVEREIGN.LAB]
+                </button>
               </div>
             </div>
 
             {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
+            <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden text-zinc-400 hover:text-white p-2"
             >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
+              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
           </div>
 
           {/* Mobile Menu */}
           {mobileMenuOpen && (
-            <div className="md:hidden py-4 border-t border-border">
-              <div className="flex flex-col gap-2">
-                <Button
-                  variant={currentView === 'dashboard' ? 'default' : 'ghost'}
+            <div className="md:hidden py-3 border-t border-zinc-800/50">
+              <div className="flex flex-col gap-1">
+                <button
                   onClick={() => {
                     setCurrentView('dashboard')
                     setMobileMenuOpen(false)
                   }}
-                  className="font-mono w-full justify-start"
+                  className={`px-4 py-2 text-xs font-bold font-mono tracking-wider text-left transition-all ${
+                    currentView === 'dashboard' 
+                      ? 'bg-yellow-500 text-black' 
+                      : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+                  }`}
                 >
-                  Dashboard
-                </Button>
-                <Button
-                  variant={currentView === 'sovereign' ? 'default' : 'ghost'}
+                  [DASHBOARD]
+                </button>
+                <button
                   onClick={() => {
                     setCurrentView('sovereign')
                     setMobileMenuOpen(false)
                   }}
-                  className="font-mono w-full justify-start"
+                  className={`px-4 py-2 text-xs font-bold font-mono tracking-wider text-left transition-all ${
+                    currentView === 'sovereign' 
+                      ? 'bg-yellow-500 text-black' 
+                      : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+                  }`}
                 >
-                  Sovereign Lab
-                </Button>
+                  [SOVEREIGN.LAB]
+                </button>
               </div>
             </div>
           )}
