@@ -41,37 +41,51 @@ const globalBrokers = [
 
 const regions = ['North America', 'Europe', 'Asia', 'Australia', 'South America', 'Africa']
 
+// Fallback static data in case generation fails
+const fallbackBrokers: DataBroker[] = [
+  { name: 'Whitepages', dataExposed: ['Home Address', 'Phone'], status: 'exposed', region: 'North America' },
+  { name: 'Spokeo', dataExposed: ['Email', 'DOB', 'Relatives'], status: 'exposed', region: 'North America' },
+  { name: 'BeenVerified', dataExposed: ['Employment', 'Court Records'], status: 'purging', region: 'North America' },
+  { name: 'Intelius', dataExposed: ['Home Address', 'Social Media'], status: 'clear', region: 'North America' },
+  { name: 'MyLife', dataExposed: ['Phone', 'Email', 'Relatives'], status: 'exposed', region: 'Europe' },
+]
+
 function generateBrokers(): DataBroker[] {
-  const brokers: DataBroker[] = []
-  const targetCount = 4200
+  try {
+    const brokers: DataBroker[] = []
+    const targetCount = 4200
 
-  for (let i = 0; i < targetCount; i++) {
-    const baseName = globalBrokers[i % globalBrokers.length]
-    const suffix = i >= globalBrokers.length ? ` ${Math.floor(i / globalBrokers.length) + 1}` : ''
+    for (let i = 0; i < targetCount; i++) {
+      const baseName = globalBrokers[i % globalBrokers.length]
+      const suffix = i >= globalBrokers.length ? ` ${Math.floor(i / globalBrokers.length) + 1}` : ''
 
-    const dataTypes: string[] = []
-    const possibleData = ['Home Address', 'Phone', 'Email', 'DOB', 'Relatives', 'Employment', 'Court Records', 'Social Media']
-    const numDataTypes = Math.floor(Math.random() * 4) + 2
+      const dataTypes: string[] = []
+      const possibleData = ['Home Address', 'Phone', 'Email', 'DOB', 'Relatives', 'Employment', 'Court Records', 'Social Media']
+      const numDataTypes = Math.floor(Math.random() * 4) + 2
 
-    for (let j = 0; j < numDataTypes; j++) {
-      const randomData = possibleData[Math.floor(Math.random() * possibleData.length)]
-      if (!dataTypes.includes(randomData)) {
-        dataTypes.push(randomData)
+      for (let j = 0; j < numDataTypes; j++) {
+        const randomData = possibleData[Math.floor(Math.random() * possibleData.length)]
+        if (!dataTypes.includes(randomData)) {
+          dataTypes.push(randomData)
+        }
       }
+
+      const rand = Math.random()
+      const status: BrokerStatus = rand < 0.78 ? 'exposed' : rand < 0.85 ? 'purging' : 'clear'
+
+      brokers.push({
+        name: `${baseName}${suffix}`,
+        dataExposed: dataTypes,
+        status,
+        region: regions[Math.floor(Math.random() * regions.length)],
+      })
     }
 
-    const rand = Math.random()
-    const status: BrokerStatus = rand < 0.78 ? 'exposed' : rand < 0.85 ? 'purging' : 'clear'
-
-    brokers.push({
-      name: `${baseName}${suffix}`,
-      dataExposed: dataTypes,
-      status,
-      region: regions[Math.floor(Math.random() * regions.length)],
-    })
+    return brokers
+  } catch (error) {
+    console.error('[v0] Error generating brokers, using fallback data:', error)
+    return fallbackBrokers
   }
-
-  return brokers
 }
 
 const terminalLogs = [
@@ -110,15 +124,28 @@ export function ADRDashboard() {
   )
 
   useEffect(() => {
-    setAllBrokers(generateBrokers())
-    setMounted(true)
+    try {
+      const brokers = generateBrokers()
+      setAllBrokers(brokers)
+      console.log('[v0] Successfully loaded', brokers.length, 'brokers')
+    } catch (error) {
+      console.error('[v0] Failed to initialize brokers:', error)
+      setAllBrokers(fallbackBrokers)
+    } finally {
+      setMounted(true)
+    }
   }, [])
 
   useEffect(() => {
-    if (allBrokers.length > 0) {
-      const startIdx = (currentPage - 1) * brokersPerPage
-      const endIdx = startIdx + brokersPerPage
-      setDisplayedBrokers(allBrokers.slice(startIdx, endIdx))
+    try {
+      if (allBrokers.length > 0) {
+        const startIdx = (currentPage - 1) * brokersPerPage
+        const endIdx = startIdx + brokersPerPage
+        setDisplayedBrokers(allBrokers.slice(startIdx, endIdx))
+      }
+    } catch (error) {
+      console.error('[v0] Error updating displayed brokers:', error)
+      setDisplayedBrokers([])
     }
   }, [currentPage, allBrokers])
 
@@ -126,65 +153,88 @@ export function ADRDashboard() {
     if (!mounted) return
 
     const interval = setInterval(() => {
-      const randomLog = terminalLogs[Math.floor(Math.random() * terminalLogs.length)]
-      setLogs((prev) => [...prev.slice(-8), randomLog])
+      try {
+        const randomLog = terminalLogs[Math.floor(Math.random() * terminalLogs.length)]
+        setLogs((prev) => [...prev.slice(-8), randomLog])
+      } catch (error) {
+        console.error('[v0] Error updating terminal logs:', error)
+      }
     }, 1500)
 
     return () => clearInterval(interval)
   }, [mounted])
 
   useEffect(() => {
-    if (terminalRef.current) {
-      terminalRef.current.scrollTop = terminalRef.current.scrollHeight
+    try {
+      if (terminalRef.current) {
+        terminalRef.current.scrollTop = terminalRef.current.scrollHeight
+      }
+    } catch (error) {
+      console.error('[v0] Error scrolling terminal:', error)
     }
   }, [logs])
 
   const handleKill = (brokerName: string) => {
-    setAllBrokers((prev) =>
-      prev.map((broker) =>
-        broker.name === brokerName
-          ? { ...broker, status: broker.status === 'exposed' ? 'purging' : 'clear' }
-          : broker
+    try {
+      setAllBrokers((prev) =>
+        prev.map((broker) =>
+          broker.name === brokerName
+            ? { ...broker, status: broker.status === 'exposed' ? 'purging' : 'clear' }
+            : broker
+        )
       )
-    )
 
-    const broker = allBrokers.find((b) => b.name === brokerName)
-    if (broker) {
-      setHotspotStates((prev) => ({
-        ...prev,
-        [broker.region]: 'clearing',
-      }))
-
-      setTimeout(() => {
+      const broker = allBrokers.find((b) => b.name === brokerName)
+      if (broker) {
         setHotspotStates((prev) => ({
           ...prev,
-          [broker.region]: 'hostile',
+          [broker.region]: 'clearing',
         }))
-      }, 3000)
+
+        setTimeout(() => {
+          setHotspotStates((prev) => ({
+            ...prev,
+            [broker.region]: 'hostile',
+          }))
+        }, 3000)
+      }
+    } catch (error) {
+      console.error('[v0] Error handling broker kill:', error)
     }
   }
 
   const handleSystemPurge = () => {
-    setIsPurging(true)
+    try {
+      setIsPurging(true)
 
-    let regionIndex = 0
-    const scanInterval = setInterval(() => {
-      if (regionIndex < worldHotspots.length) {
-        setScanningRegion(worldHotspots[regionIndex])
-        regionIndex++
-      } else {
-        clearInterval(scanInterval)
-        setScanningRegion(null)
-        setIsPurging(false)
-      }
-    }, 1000)
+      let regionIndex = 0
+      const scanInterval = setInterval(() => {
+        try {
+          if (regionIndex < worldHotspots.length) {
+            setScanningRegion(worldHotspots[regionIndex])
+            regionIndex++
+          } else {
+            clearInterval(scanInterval)
+            setScanningRegion(null)
+            setIsPurging(false)
+          }
+        } catch (error) {
+          console.error('[v0] Error in scan interval:', error)
+          clearInterval(scanInterval)
+          setIsPurging(false)
+        }
+      }, 1000)
 
-    setAllBrokers((prev) =>
-      prev.map((broker) => ({
-        ...broker,
-        status: broker.status === 'exposed' ? 'purging' : broker.status,
-      }))
-    )
+      setAllBrokers((prev) =>
+        prev.map((broker) => ({
+          ...broker,
+          status: broker.status === 'exposed' ? 'purging' : broker.status,
+        }))
+      )
+    } catch (error) {
+      console.error('[v0] Error initiating system purge:', error)
+      setIsPurging(false)
+    }
   }
 
   if (!mounted) {

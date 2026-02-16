@@ -9,17 +9,30 @@ export function DataCollectionNotice() {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    // Check if user has already consented
-    const hasConsented = localStorage.getItem('adr-privacy-consent')
-    if (!hasConsented) {
+    try {
+      // Check if user has already consented
+      const hasConsented = localStorage.getItem('adr-privacy-consent')
+      if (!hasConsented) {
+        setIsVisible(true)
+      }
+    } catch (error) {
+      console.error('[v0] Error reading consent from localStorage:', error)
+      // Show notice if we can't read consent status
       setIsVisible(true)
     }
   }, [])
 
   const handleAccept = () => {
-    localStorage.setItem('adr-privacy-consent', 'true')
-    localStorage.setItem('adr-privacy-consent-date', new Date().toISOString())
-    setIsVisible(false)
+    try {
+      localStorage.setItem('adr-privacy-consent', 'true')
+      localStorage.setItem('adr-privacy-consent-date', new Date().toISOString())
+      setIsVisible(false)
+      console.log('[v0] Privacy consent saved successfully')
+    } catch (error) {
+      console.error('[v0] Error saving consent to localStorage:', error)
+      // Still hide the notice even if we can't save to localStorage
+      setIsVisible(false)
+    }
   }
 
   if (!isVisible) return null
