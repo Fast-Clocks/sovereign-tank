@@ -167,20 +167,6 @@ export function SovereigntyLabView() {
         {/* Legal Footer */}
         <LegalFooter />
       </div>
-
-      <style jsx>{`
-        @keyframes scroll {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        .animate-scroll {
-          animation: scroll 30s linear infinite;
-        }
-      `}</style>
     </div>
   )
 }

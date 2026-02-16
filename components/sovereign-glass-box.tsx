@@ -86,7 +86,7 @@ export function SovereignGlassBox() {
             </div>
           </div>
         ) : (
-          <div className={`space-y-2 font-mono text-xs sm:text-sm ${mode === 'purging' ? 'animate-fast-scroll' : ''}`}>
+          <div className="space-y-2 font-mono text-xs sm:text-sm">
             {displayLines.map((line, index) => (
               <div 
                 key={index} 
@@ -94,7 +94,7 @@ export function SovereignGlassBox() {
                   mode === 'technical' ? 'text-yellow-400' : 
                   mode === 'plain' ? 'text-zinc-300' : 
                   'text-red-500'
-                }`}
+                } ${mode === 'purging' ? 'animate-bounce' : ''}`}
               >
                 <span className="text-zinc-600">[{String(index + 1).padStart(2, '0')}]</span>
                 <span className={mode === 'purging' ? 'animate-pulse' : ''}>{line}</span>
@@ -129,20 +129,6 @@ export function SovereignGlassBox() {
           </button>
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes fast-scroll {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-        .animate-fast-scroll {
-          animation: fast-scroll 0.3s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   )
 }
