@@ -1,3 +1,5 @@
+'use client'
+
 import { ShieldCheck, Cpu, Lock, Globe, Zap } from "lucide-react"
 
 export default function SovereigntyLab() {
