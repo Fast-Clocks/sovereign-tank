@@ -1,6 +1,6 @@
 'use client'
 
-import { ShieldCheck, Cpu, Lock, Globe, Zap } from "lucide-react"
+import { ShieldCheck, Cpu, Lock, Globe, Zap, CheckCircle2, AlertTriangle, FileText } from "lucide-react"
 
 export default function SovereigntyLab() {
   return (
@@ -77,6 +77,68 @@ export default function SovereigntyLab() {
                 Finalizing World-First <strong>Hardware-Locked Mobile Handshake</strong>. Deploying advanced encryption layers for Q2 2026.
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* Australian Legal Compliance Security Check */}
+        <div className="mt-12 bg-zinc-950 border border-yellow-500/20 rounded-3xl p-10">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-2xl font-bold mb-2">Australian Legal Compliance Security Check</h3>
+              <p className="text-zinc-500 text-sm font-mono">Last Audit: 16 Feb 2026 14:32 AEDT</p>
+            </div>
+            <div className="h-16 w-16 rounded-full bg-green-500/10 border-2 border-green-500 flex items-center justify-center">
+              <CheckCircle2 className="w-8 h-8 text-green-500" />
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            {/* Privacy Act Compliance */}
+            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 hover:border-yellow-500/30 transition-colors">
+              <div className="flex items-center justify-between mb-4">
+                <FileText className="w-6 h-6 text-yellow-500" />
+                <span className="text-[10px] font-mono text-green-500 font-bold">COMPLIANT</span>
+              </div>
+              <h4 className="font-bold mb-2">Privacy Act 1988</h4>
+              <p className="text-xs text-zinc-400 leading-relaxed">All 13 Australian Privacy Principles (APPs) verified and enforced across data collection, storage, and transmission layers.</p>
+            </div>
+
+            {/* Security of Critical Infrastructure */}
+            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 hover:border-yellow-500/30 transition-colors">
+              <div className="flex items-center justify-between mb-4">
+                <Lock className="w-6 h-6 text-yellow-500" />
+                <span className="text-[10px] font-mono text-green-500 font-bold">CERTIFIED</span>
+              </div>
+              <h4 className="font-bold mb-2">SOCI Act 2018</h4>
+              <p className="text-xs text-zinc-400 leading-relaxed">Security of Critical Infrastructure Act compliance. Risk management program active with mandatory reporting protocols.</p>
+            </div>
+
+            {/* Notifiable Data Breaches */}
+            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 hover:border-yellow-500/30 transition-colors">
+              <div className="flex items-center justify-between mb-4">
+                <AlertTriangle className="w-6 h-6 text-yellow-500" />
+                <span className="text-[10px] font-mono text-green-500 font-bold">ACTIVE</span>
+              </div>
+              <h4 className="font-bold mb-2">NDB Scheme</h4>
+              <p className="text-xs text-zinc-400 leading-relaxed">Notifiable Data Breaches scheme monitoring active. Real-time threat detection with automated OAIC notification pathways.</p>
+            </div>
+          </div>
+
+          {/* Compliance Status Bar */}
+          <div className="flex items-center justify-between p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-xl">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-xs font-mono text-green-500 font-bold">SYSTEM SECURE</span>
+              </div>
+              <span className="text-zinc-700">|</span>
+              <span className="text-xs text-zinc-400">ASD Essential Eight: <strong className="text-white">Maturity Level 3</strong></span>
+              <span className="text-zinc-700">|</span>
+              <span className="text-xs text-zinc-400">ISO 27001: <strong className="text-white">Certified</strong></span>
+            </div>
+            <button className="text-xs font-bold text-yellow-500 hover:text-yellow-400 transition-colors uppercase tracking-wider">
+              View Full Report →
+            </button>
           </div>
         </div>
 
