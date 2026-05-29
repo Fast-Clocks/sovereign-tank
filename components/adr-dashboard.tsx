@@ -9,6 +9,7 @@ import { GlobalThreatMap } from '@/components/global-threat-map'
 import { SystemHealthPanel } from '@/components/system-health-panel'
 import { AICommandTerminal } from '@/components/ai-command-terminal'
 import { DocumentAnalyzer } from '@/components/document-analyzer'
+import { OSINTScanner } from '@/components/osint-scanner'
 
 type BrokerStatus = 'exposed' | 'purging' | 'clear'
 
@@ -568,6 +569,11 @@ export function ADRDashboard() {
         <div className="mt-6 grid lg:grid-cols-2 gap-6">
           <AICommandTerminal className="h-[500px]" />
           <DocumentAnalyzer className="h-[500px]" />
+        </div>
+
+        {/* OSINT Scanner */}
+        <div className="mt-6">
+          <OSINTScanner />
         </div>
 
         {/* Sovereign Glass Box - Session Tracking */}
