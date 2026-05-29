@@ -7,6 +7,8 @@ import { SovereignGlassBox } from '@/components/sovereign-glass-box'
 import { LegalFooter } from '@/components/legal-footer'
 import { GlobalThreatMap } from '@/components/global-threat-map'
 import { SystemHealthPanel } from '@/components/system-health-panel'
+import { AICommandTerminal } from '@/components/ai-command-terminal'
+import { DocumentAnalyzer } from '@/components/document-analyzer'
 
 type BrokerStatus = 'exposed' | 'purging' | 'clear'
 
@@ -560,6 +562,12 @@ export function ADRDashboard() {
           <div className="mt-3 text-xs text-muted-foreground font-mono text-center">
             Just Software • Programmatic Enforcement • No Human Intervention Required
           </div>
+        </div>
+
+        {/* AI Command Center */}
+        <div className="mt-6 grid lg:grid-cols-2 gap-6">
+          <AICommandTerminal className="h-[500px]" />
+          <DocumentAnalyzer className="h-[500px]" />
         </div>
 
         {/* Sovereign Glass Box - Session Tracking */}

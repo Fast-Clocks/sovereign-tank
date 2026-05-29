@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { DataCollectionNotice } from '@/components/data-collection-notice'
+import { AIAssistantChat } from '@/components/ai-assistant-chat'
 
 import './globals.css'
 
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body className="font-sans antialiased min-h-screen">
         {children}
         <DataCollectionNotice />
+        <AIAssistantChat />
       </body>
     </html>
   )
