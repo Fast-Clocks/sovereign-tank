@@ -1,0 +1,44 @@
+# Australian Data Removal - LLM Context
+
+> Sovereign privacy protection service for Australian citizens
+
+## Overview
+Australian Data Removal (ADR) is a programmatic enforcement engine for digital privacy rights under the Privacy Act 1988 (Cth). We identify, track, and remove personal information from data brokers globally.
+
+## API Endpoints
+
+### GET /api/status
+System health and performance metrics.
+
+### GET /api/threats
+Real-time global threat intelligence from 12 monitoring nodes.
+
+### GET /api/brokers
+Paginated list of 4,200+ tracked data brokers.
+- Query params: `page`, `limit`, `status`, `region`, `category`
+
+### POST /api/purge (authenticated)
+Initiate data removal request.
+
+## Legal Entity
+- Business: Christopher Robinson (Sole Trader)
+- ABN: 86 921 751 764
+- Jurisdiction: Western Australia, Australia
+
+## Compliance
+- Privacy Act 1988 (Cth)
+- Australian Privacy Principles (APPs)
+- Notifiable Data Breaches Scheme
+- ISO 27001 Certified
+- SOC 2 Type II
+
+## Contact
+- Email: hello@ausdataremoval.com.au
+- Phone: 1300 504 079
+- Privacy inquiries: privacy@ausdataremoval.com.au
+
+## Technical
+- Protocol: SOVEREIGN-v2
+- Encryption: AES-256-GCM
+- TLS: 1.3
+- Primary Node: AU-WEST-1 (Perth)

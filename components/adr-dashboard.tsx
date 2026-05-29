@@ -5,6 +5,8 @@ import { Shield, AlertTriangle, CheckCircle, Loader2, Globe, Users, Clock, Zap }
 import { Button } from '@/components/ui/button'
 import { SovereignGlassBox } from '@/components/sovereign-glass-box'
 import { LegalFooter } from '@/components/legal-footer'
+import { GlobalThreatMap } from '@/components/global-threat-map'
+import { SystemHealthPanel } from '@/components/system-health-panel'
 
 type BrokerStatus = 'exposed' | 'purging' | 'clear'
 
@@ -504,53 +506,7 @@ export function ADRDashboard() {
                 <h3 className="text-lg font-semibold text-foreground">Global Threat Map</h3>
               </div>
 
-              <div className="relative w-full h-48 bg-muted/30 rounded-lg overflow-hidden border border-border">
-                <svg viewBox="0 0 100 100" className="w-full h-full">
-                  {worldHotspots.map((hotspot) => (
-                    <g key={hotspot.name}>
-                      <circle
-                        cx={hotspot.coords.x}
-                        cy={hotspot.coords.y}
-                        r="3"
-                        fill={hotspotStates[hotspot.name] === 'clearing' ? '#10b981' : '#ef4444'}
-                        opacity="0.8"
-                      >
-                        <animate
-                          attributeName="r"
-                          from="3"
-                          to="6"
-                          dur="2s"
-                          repeatCount="indefinite"
-                        />
-                        <animate
-                          attributeName="opacity"
-                          from="0.8"
-                          to="0"
-                          dur="2s"
-                          repeatCount="indefinite"
-                        />
-                      </circle>
-                      <circle
-                        cx={hotspot.coords.x}
-                        cy={hotspot.coords.y}
-                        r="2"
-                        fill={hotspotStates[hotspot.name] === 'clearing' ? '#10b981' : '#ef4444'}
-                      />
-                    </g>
-                  ))}
-                </svg>
-              </div>
-
-              <div className="mt-4 flex items-center justify-between text-xs font-mono">
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-destructive" />
-                  <span className="text-muted-foreground">Hostile</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-emerald-500" />
-                  <span className="text-muted-foreground">Clearing</span>
-                </div>
-              </div>
+              <GlobalThreatMap className="rounded-lg overflow-hidden" />
             </div>
 
             <div className="rounded-lg border border-border bg-card p-6">
@@ -573,6 +529,9 @@ export function ADRDashboard() {
                 </div>
               </div>
             </div>
+
+            {/* System Health Panel */}
+            <SystemHealthPanel />
           </div>
         </div>
 
