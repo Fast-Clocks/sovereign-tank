@@ -11,6 +11,7 @@ import { AICommandTerminal } from '@/components/ai-command-terminal'
 import { DocumentAnalyzer } from '@/components/document-analyzer'
 import { OSINTScanner } from '@/components/osint-scanner'
 import { AttackSurfaceMapper } from '@/components/attack-surface-mapper'
+import { SecurityOperationsDashboard } from '@/components/security-operations-dashboard'
 
 type BrokerStatus = 'exposed' | 'purging' | 'clear'
 
@@ -580,6 +581,11 @@ export function ADRDashboard() {
         {/* Attack Surface Mapper */}
         <div className="mt-6">
           <AttackSurfaceMapper />
+        </div>
+
+        {/* Security Operations Center */}
+        <div className="mt-6">
+          <SecurityOperationsDashboard />
         </div>
 
         {/* Sovereign Glass Box - Session Tracking */}
