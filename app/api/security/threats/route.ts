@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { generateThreatVector, type ThreatVector } from '@/lib/security-engine'
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
+export const maxDuration = 60
 
 // Store recent threats in memory (would be Redis/DB in production)
 let threatBuffer: ThreatVector[] = []

@@ -7,7 +7,8 @@ import {
   AIOrchestrationResult 
 } from '@/lib/ai-orchestrator'
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
+export const maxDuration = 60
 
 // AI Gateway model strings for each provider
 function getGatewayModel(provider: AIProvider, model?: string): string {

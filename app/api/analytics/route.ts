@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
+export const maxDuration = 60
 
 // Vercel/Cloudflare-style analytics endpoint
 export async function GET(request: Request) {

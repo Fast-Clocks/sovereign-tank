@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { runComprehensiveScan, KNOWN_BREACHES, DATA_BROKERS, SOCIAL_PLATFORMS } from '@/lib/osint-scanner'
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
+export const maxDuration = 60
 
 export async function POST(request: Request) {
   try {

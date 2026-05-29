@@ -1,7 +1,8 @@
 import { streamText } from 'ai'
 import { SYSTEM_PROMPTS } from '@/lib/ai-orchestrator'
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
+export const maxDuration = 60
 
 export async function POST(req: Request) {
   try {

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { knownBreaches } from '@/lib/osint-engine'
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
+export const maxDuration = 60
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
