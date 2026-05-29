@@ -1,4 +1,4 @@
-'use server'
+// Utility library - not a server action
 
 // =============================================================================
 // ADR SECURITY ENGINE - Cloudflare-Grade Infrastructure
@@ -83,7 +83,7 @@ export interface RateLimitRule {
 }
 
 // Simulated real-time threat generation
-export function generateThreatVector(): ThreatVector {
+export async function generateThreatVector(): ThreatVector {
   const types: ThreatVector['type'][] = ['DDoS', 'SQLi', 'XSS', 'BotNet', 'Scraper', 'DataExfil', 'BruteForce', 'Phishing']
   const severities: ThreatVector['severity'][] = ['critical', 'high', 'medium', 'low']
   
@@ -136,7 +136,7 @@ export function generateThreatVector(): ThreatVector {
   }
 }
 
-export function generateSecurityMetrics(): SecurityMetrics {
+export async function generateSecurityMetrics(): SecurityMetrics {
   return {
     totalRequests24h: 847293847 + Math.floor(Math.random() * 1000000),
     blockedRequests24h: 12847293 + Math.floor(Math.random() * 100000),

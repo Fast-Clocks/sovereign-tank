@@ -1,4 +1,4 @@
-'use server'
+// Utility library - not a server action
 
 // =============================================================================
 // ADR OSINT ENGINE - Privacy Intelligence & Breach Detection
@@ -143,7 +143,7 @@ export const knownBreaches: Omit<BreachRecord, 'id'>[] = [
   { name: 'Adobe', domain: 'adobe.com', breachDate: '2013-10-04', addedDate: '2013-12-04', modifiedDate: '2022-05-11', pwnCount: 153000000, description: 'In October 2013, 153 million Adobe accounts were breached with IDs, usernames, emails, encrypted passwords and password hints.', dataClasses: ['Email addresses', 'Password hints', 'Passwords', 'Usernames'], isVerified: true, isFabricated: false, isSensitive: false, isRetired: false, isSpamList: false },
 ]
 
-export function calculateExposureBits(findings: ExposureReport['findings']): number {
+export async function calculateExposureBits(findings: ExposureReport['findings']): number {
   let bits = 0
   
   // Each data class adds entropy
@@ -184,7 +184,7 @@ export function calculateExposureBits(findings: ExposureReport['findings']): num
   return Math.round(bits)
 }
 
-export function calculateRiskScore(exposureBits: number, findings: ExposureReport['findings']): number {
+export async function calculateRiskScore(exposureBits: number, findings: ExposureReport['findings']): number {
   let score = Math.min(exposureBits / 2, 50)
   
   // Breach severity
@@ -203,14 +203,14 @@ export function calculateRiskScore(exposureBits: number, findings: ExposureRepor
   return Math.min(Math.round(score), 100)
 }
 
-export function getRiskLevel(score: number): ExposureReport['riskLevel'] {
+export async function getRiskLevel(score: number): ExposureReport['riskLevel'] {
   if (score >= 80) return 'critical'
   if (score >= 60) return 'high'
   if (score >= 40) return 'medium'
   return 'low'
 }
 
-export function generateMockExposureReport(email: string): ExposureReport {
+export async function generateMockExposureReport(email: string): ExposureReport {
   const randomBreaches = knownBreaches
     .sort(() => Math.random() - 0.5)
     .slice(0, Math.floor(Math.random() * 5) + 1)

@@ -188,16 +188,16 @@ Be helpful, precise, and always prioritize user privacy.`,
 }
 
 // Orchestration helper functions
-export function getModelForProvider(provider: AIProvider, customModel?: string): string {
+export async function getModelForProvider(provider: AIProvider, customModel?: string): string {
   return customModel || DEFAULT_MODELS[provider]
 }
 
-export function estimateTokens(text: string): number {
+export async function estimateTokens(text: string): number {
   // Rough estimation: ~4 characters per token
   return Math.ceil(text.length / 4)
 }
 
-export function validateProviderConfig(config: AIProviderConfig): { valid: boolean; errors: string[] } {
+export async function validateProviderConfig(config: AIProviderConfig): { valid: boolean; errors: string[] } {
   const errors: string[] = []
   
   if (!config.provider) {
@@ -218,7 +218,7 @@ export function validateProviderConfig(config: AIProviderConfig): { valid: boole
   }
 }
 
-export function buildPrompt(capability: string, input: unknown): string {
+export async function buildPrompt(capability: string, input: unknown): string {
   const systemPrompt = SYSTEM_PROMPTS[capability] || SYSTEM_PROMPTS['nlp-query']
   const inputJson = JSON.stringify(input, null, 2)
   

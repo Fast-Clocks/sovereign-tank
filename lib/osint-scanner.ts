@@ -1,4 +1,4 @@
-'use server'
+// Utility library - not a server action
 
 // Comprehensive OSINT Scanner Engine
 // Integrates: HIBP, Sherlock-style username search, data broker detection, dark web monitoring
