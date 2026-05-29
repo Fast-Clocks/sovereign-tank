@@ -10,6 +10,7 @@ import { SystemHealthPanel } from '@/components/system-health-panel'
 import { AICommandTerminal } from '@/components/ai-command-terminal'
 import { DocumentAnalyzer } from '@/components/document-analyzer'
 import { OSINTScanner } from '@/components/osint-scanner'
+import { AttackSurfaceMapper } from '@/components/attack-surface-mapper'
 
 type BrokerStatus = 'exposed' | 'purging' | 'clear'
 
@@ -574,6 +575,11 @@ export function ADRDashboard() {
         {/* OSINT Scanner */}
         <div className="mt-6">
           <OSINTScanner />
+        </div>
+
+        {/* Attack Surface Mapper */}
+        <div className="mt-6">
+          <AttackSurfaceMapper />
         </div>
 
         {/* Sovereign Glass Box - Session Tracking */}
