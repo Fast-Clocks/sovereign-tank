@@ -1,33 +1,49 @@
-# v0-sovereignty-lab-ui
+# sovereign-tank
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
+## What This Is
+ADR Command style app clone currently matching v0-sovereignty-lab-ui tree.
 
-## Built with v0
+## APN Network Role
+Candidate command-surface repo in APN network.
 
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
+## Technical Profile
+- Framework: Next.js
+- Page/Route Count: 25
+- Route List:
+- /app/.well-known/agents.json [API]
+- /app/api/ai/analyze [API]
+- /app/api/ai/chat [API]
+- /app/api/ai/draft [API]
+- /app/api/ai/predict [API]
+- /app/api/ai [API]
+- /app/api/analytics [API]
+- /app/api/analytics/surface [API]
+- /app/api/breaches [API]
+- /app/api/brokers [API]
+- /app/api/databrokers/database [API]
+- /app/api/databrokers [API]
+- /app/api/health [API]
+- /app/api/osint/breaches [API]
+- /app/api/osint/scan [API]
+- /app/api/purge [API]
+- /app/api/scan [API]
+- /app/api/security/audit [API]
+- /app/api/security [API]
+- /app/api/security/threats [API]
+- /app/api/status [API]
+- /app/api/threats [API]
+- /app
+- /app/privacy-policy
+- /app/terms
 
-[Continue working on v0 →](https://v0.app/chat/projects/prj_VCKnPFVJReAy8u1DcPTddRTpFonc)
+## Live URL
+No active Vercel project mapping found.
 
-## Getting Started
-
-First, run the development server:
-
+## Build and Run
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+npm install\nnpm run build\nnpm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-## Learn More
-
-To learn more, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
+## Repository Status
+- Clean/Dirty Status: Clean after this README update commit.
+- Notes: This README was standardized during Fast-Clocks cleanup Phase 2.
