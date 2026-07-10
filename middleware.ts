@@ -12,7 +12,7 @@ const securityHeaders = {
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://vercel.live",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https: http:",
-    "font-src 'self' https://fonts.gstatic.com data:",
+    "font-src 'self' data:",
     "connect-src 'self' https://api.stripe.com https://*.vercel.app https://*.vercel-insights.com wss:",
     "frame-src 'self' https://js.stripe.com https://vercel.live",
     "frame-ancestors 'none'",

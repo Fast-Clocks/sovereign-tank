@@ -221,7 +221,7 @@ v0-ausdataremoval-com-au/
 ✅ **ISO 27001** - Information Security Management  
 ✅ **SOC 2 Type II** - Security & Confidentiality  
 ✅ **PCI-DSS** - Payment Card Industry standards  
-✅ **ACL (Australian Consumer Law)** - Guaranteed protections  
+✅ **ACL (Australian Consumer Law)** - Consumer protections awareness  
 ✅ **Notifiable Data Breaches Scheme** - Real-time monitoring  
 
 ---

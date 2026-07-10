@@ -1,49 +1,59 @@
-# sovereign-tank
+# Sovereign Tank
 
-## What This Is
-ADR Command style app clone currently matching v0-sovereignty-lab-ui tree.
+**Role:** Showcase, demo and modular wrapper for the Sovereign product family.
+Sovereign Tank is a demonstration surface — not a company, not a platform, not a product.
 
-## APN Network Role
-Candidate command-surface repo in APN network.
+## Lineage
 
-## Technical Profile
-- Framework: Next.js
-- Page/Route Count: 25
-- Route List:
-- /app/.well-known/agents.json [API]
-- /app/api/ai/analyze [API]
-- /app/api/ai/chat [API]
-- /app/api/ai/draft [API]
-- /app/api/ai/predict [API]
-- /app/api/ai [API]
-- /app/api/analytics [API]
-- /app/api/analytics/surface [API]
-- /app/api/breaches [API]
-- /app/api/brokers [API]
-- /app/api/databrokers/database [API]
-- /app/api/databrokers [API]
-- /app/api/health [API]
-- /app/api/osint/breaches [API]
-- /app/api/osint/scan [API]
-- /app/api/purge [API]
-- /app/api/scan [API]
-- /app/api/security/audit [API]
-- /app/api/security [API]
-- /app/api/security/threats [API]
-- /app/api/status [API]
-- /app/api/threats [API]
-- /app
-- /app/privacy-policy
-- /app/terms
+- **Origin:** Generated via v0.dev, then customised across multiple sessions.
+- **Original name in package.json:** `my-project` (v0.dev default — never renamed).
+- **GitHub repo:** `Fast-Clocks/sovereign-tank`
+- **Relationship:** Shares visual DNA with `v0-sovereignty-lab-ui` (Sovereignty Lab). Both descend from the same v0.dev generation but diverged. sovereign-tank was forked into its own repo as the showcase/demo surface. v0-sovereignty-lab-ui remained the deployed lab UI.
+- **Vercel:** No Vercel project currently mapped. Previously associated with sovereignty domains but DNS was never correctly wired.
+- **Framework:** Next.js (App Router)
+- **UI:** shadcn/ui + Tailwind CSS
 
-## Live URL
-No active Vercel project mapping found.
+## What it contains
 
-## Build and Run
+- ADR Command dashboard (demo surface)
+- Sovereignty Lab view (interactive demo)
+- Simulated API endpoints (OSINT, breach lookup, threat map, analytics)
+- Privacy policy and terms pages
+- Security operations dashboard (demo)
+
+## Architecture position
+
+Per the governing build order:
+- **Sovereign Suite** — commercial proof, verification and assurance product layer.
+- **Australian Privacy Network (APN)** — public trust, resource and education layer.
+- **Sovereign Verify** — first public-facing proof/verification product.
+- **Sovereign Engine** — deeper infrastructure and custom deployment only.
+- **Sovereign Tank** — showcase / demo / modular wrapper (this repo).
+
+## Compliance status
+
+- **Word-risk:** Scanned against BUILD_STANDARD_data-privacy-compliance.md. One prohibited claim fixed (`Guaranteed protections` → `Consumer protections awareness`).
+- **External calls:** Google Fonts CDN removed from CSP middleware. jsdelivr CDN reference remains for world-atlas topological data (geo-map component) — acceptable for demo surface, would need local bundling for production.
+- **Analytics:** None.
+- **Demo data:** API endpoints return simulated/mock data. No production receipts. No live backend writes.
+
+## Entity
+
+Australian Privacy Network (APN) — operated by Australian Data Removal Pty Ltd · ACN 695 272 836
+
+## Build
+
 ```bash
-npm install\nnpm run build\nnpm run dev
+npm install
+npm run build
 ```
 
-## Repository Status
-- Clean/Dirty Status: Clean after this README update commit.
-- Notes: This README was standardized during Fast-Clocks cleanup Phase 2.
+## Status
+
+| Check | Result |
+|-------|--------|
+| Branch | main only |
+| Protection | Enabled — no force push, no branch deletion |
+| Compliance scan | Clean (post-fix) |
+| External fonts | Removed from CSP |
+| README lineage | Complete |
