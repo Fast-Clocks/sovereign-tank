@@ -37,7 +37,7 @@ export async function POST(req: Request) {
       provider = 'openai',
       model,
       stream = true,
-      maxTokens = 4096,
+      maxOutputTokens = 4096,
       temperature = 0.7,
     } = body
 
@@ -58,11 +58,11 @@ export async function POST(req: Request) {
         model: gatewayModel,
         system: systemPrompt,
         prompt: typeof input === 'string' ? input : JSON.stringify(input, null, 2),
-        maxTokens,
+        maxOutputTokens,
         temperature,
       })
 
-      return result.toDataStreamResponse({
+      return result.toUIMessageStreamResponse({
         headers: {
           'X-ADR-AI-Provider': provider,
           'X-ADR-AI-Model': gatewayModel,
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
       model: gatewayModel,
       system: systemPrompt,
       prompt: typeof input === 'string' ? input : JSON.stringify(input, null, 2),
-      maxTokens,
+      maxOutputTokens,
       temperature,
     })
 

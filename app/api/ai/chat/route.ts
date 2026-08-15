@@ -42,11 +42,11 @@ Legal framework: Australian Privacy Principles (APPs) 1-13`
       model: gatewayModel,
       system: systemPrompt,
       messages,
-      maxTokens: 2048,
+      maxOutputTokens: 2048,
       temperature: 0.7,
     })
 
-    return result.toDataStreamResponse({
+    return result.toUIMessageStreamResponse({
       headers: {
         'X-ADR-AI-Capability': 'chat',
         'X-ADR-AI-Model': gatewayModel,

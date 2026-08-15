@@ -111,11 +111,11 @@ Contact: hello@ausdataremoval.com.au
       model: gatewayModel,
       system: SYSTEM_PROMPTS['legal-drafting'],
       prompt: draftPrompt,
-      maxTokens: 4096,
+      maxOutputTokens: 4096,
       temperature: 0.2, // Low temperature for legal precision
     })
 
-    return result.toDataStreamResponse({
+    return result.toUIMessageStreamResponse({
       headers: {
         'X-ADR-AI-Capability': 'legal-drafting',
         'X-ADR-AI-Model': gatewayModel,

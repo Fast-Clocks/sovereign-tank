@@ -131,7 +131,10 @@ export async function POST(req: NextRequest) {
     const flatTxt = (txt ?? []).map((parts) => parts.join(''));
     let spfRecord: string | null = null;
 
-    flatTxt.forEach((record, i) => {
+    // for...of rather than forEach: TypeScript's control-flow analysis cannot
+    // track assignments made inside a callback, so `spfRecord` stayed typed as
+    // `null` after the loop and narrowed to `never` in the else branch below.
+    for (const [i, record] of flatTxt.entries()) {
       if (/^v=spf1/i.test(record)) spfRecord = record;
       const id = `txt_${i}`;
       nodes.push({
@@ -142,7 +145,7 @@ export async function POST(req: NextRequest) {
         group: 3,
       });
       links.push({ source: 'root', target: id, relation: 'asserts_policy' });
-    });
+    }
 
     const dmarcRecord =
       (dmarcTxt ?? [])
