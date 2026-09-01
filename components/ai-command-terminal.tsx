@@ -1,21 +1,20 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { useChat } from '@ai-sdk/react'
-import { 
-  Terminal, 
-  Send, 
-  Zap, 
-  Brain, 
-  Shield, 
-  FileText, 
+import { DefaultChatTransport, type UIMessage } from 'ai'
+import {
+  Terminal,
+  Send,
+  Brain,
+  Shield,
+  FileText,
   Search,
   AlertTriangle,
   Loader2,
-  Settings,
   ChevronDown,
   Sparkles,
-  Command
+  Command,
 } from 'lucide-react'
 
 type AIProvider = 'openai' | 'anthropic' | 'google' | 'groq'
@@ -42,65 +41,105 @@ const PROVIDER_INFO: Record<AIProvider, { name: string; model: string; color: st
   groq: { name: 'Groq', model: 'Llama 3.3', color: 'text-purple-400' },
 }
 
+function messageText(message: UIMessage): string {
+  return message.parts
+    .filter((part) => part.type === 'text')
+    .map((part) => part.text)
+    .join('')
+}
+
 export function AICommandTerminal({ className = '' }: { className?: string }) {
   const [provider, setProvider] = useState<AIProvider>('openai')
   const [showProviderSelect, setShowProviderSelect] = useState(false)
   const [commandHistory, setCommandHistory] = useState<CommandHistoryItem[]>([
     { command: 'ADR COMMAND AI v2.0.0 initialized', timestamp: new Date(), type: 'system' },
-    { command: `Provider: ${PROVIDER_INFO['openai'].name} (${PROVIDER_INFO['openai'].model})`, timestamp: new Date(), type: 'system' },
-    { command: 'Type /help for available commands or ask any question', timestamp: new Date(), type: 'system' },
+    {
+      command: `Provider: ${PROVIDER_INFO.openai.name} (${PROVIDER_INFO.openai.model})`,
+      timestamp: new Date(),
+      type: 'system',
+    },
+    {
+      command: 'Type /help for available commands or ask any question',
+      timestamp: new Date(),
+      type: 'system',
+    },
   ])
   const [inputValue, setInputValue] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
+  const providerRef = useRef<AIProvider>(provider)
   const terminalRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const { messages, append, isLoading } = useChat({
-    api: '/api/ai/chat',
-    body: { provider },
-    onFinish: (message) => {
-      setCommandHistory(prev => [...prev, {
-        command: message.content,
-        timestamp: new Date(),
-        type: 'ai'
-      }])
+  useEffect(() => {
+    providerRef.current = provider
+  }, [provider])
+
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: '/api/ai/chat',
+        body: () => ({ provider: providerRef.current }),
+      }),
+    [],
+  )
+
+  const { messages, sendMessage, status } = useChat({
+    transport,
+    onFinish: ({ message }) => {
+      const response = messageText(message)
+      if (response) {
+        setCommandHistory((previous) => [
+          ...previous,
+          { command: response, timestamp: new Date(), type: 'ai' },
+        ])
+      }
       setIsProcessing(false)
     },
     onError: (error) => {
-      setCommandHistory(prev => [...prev, {
-        command: `ERROR: ${error.message}`,
-        timestamp: new Date(),
-        type: 'system'
-      }])
+      setCommandHistory((previous) => [
+        ...previous,
+        { command: `ERROR: ${error.message}`, timestamp: new Date(), type: 'system' },
+      ])
       setIsProcessing(false)
     },
   })
 
-  // Auto-scroll terminal
+  const isLoading = status === 'submitted' || status === 'streaming'
+
   useEffect(() => {
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight
     }
   }, [commandHistory, messages])
 
-  const handleCommand = useCallback(async (input: string) => {
-    const trimmed = input.trim()
-    if (!trimmed) return
+  const sendPrompt = useCallback(
+    async (text: string) => {
+      setIsProcessing(true)
+      await sendMessage({ text })
+    },
+    [sendMessage],
+  )
 
-    setCommandHistory(prev => [...prev, {
-      command: `> ${trimmed}`,
-      timestamp: new Date(),
-      type: 'user'
-    }])
+  const handleCommand = useCallback(
+    async (input: string) => {
+      const trimmed = input.trim()
+      if (!trimmed || isLoading) return
 
-    // Handle special commands
-    if (trimmed.startsWith('/')) {
-      const [cmd, ...args] = trimmed.split(' ')
-      
-      switch (cmd.toLowerCase()) {
-        case '/help':
-          setCommandHistory(prev => [...prev, {
-            command: `
+      setCommandHistory((previous) => [
+        ...previous,
+        { command: `> ${trimmed}`, timestamp: new Date(), type: 'user' },
+      ])
+
+      if (trimmed.startsWith('/')) {
+        const [rawCommand, ...args] = trimmed.split(' ')
+        const command = rawCommand.toLowerCase()
+
+        switch (command) {
+          case '/help':
+            setCommandHistory((previous) => [
+              ...previous,
+              {
+                command: `
 AVAILABLE COMMANDS:
 ------------------
 /scan [email]     - Scan for data exposure
@@ -113,143 +152,148 @@ AVAILABLE COMMANDS:
 /help             - Show this help message
 
 Or just type any question to chat with the AI assistant.`,
-            timestamp: new Date(),
-            type: 'system'
-          }])
-          return
+                timestamp: new Date(),
+                type: 'system',
+              },
+            ])
+            return
 
-        case '/clear':
-          setCommandHistory([{
-            command: 'Terminal cleared',
-            timestamp: new Date(),
-            type: 'system'
-          }])
-          return
+          case '/clear':
+            setCommandHistory([
+              { command: 'Terminal cleared', timestamp: new Date(), type: 'system' },
+            ])
+            return
 
-        case '/provider':
-          const newProvider = args[0]?.toLowerCase() as AIProvider
-          if (newProvider && PROVIDER_INFO[newProvider]) {
-            setProvider(newProvider)
-            setCommandHistory(prev => [...prev, {
-              command: `Switched to ${PROVIDER_INFO[newProvider].name} (${PROVIDER_INFO[newProvider].model})`,
-              timestamp: new Date(),
-              type: 'system'
-            }])
-          } else {
-            setCommandHistory(prev => [...prev, {
-              command: 'Available providers: openai, anthropic, google, groq',
-              timestamp: new Date(),
-              type: 'system'
-            }])
+          case '/provider': {
+            const nextProvider = args[0]?.toLowerCase() as AIProvider
+            if (nextProvider && PROVIDER_INFO[nextProvider]) {
+              setProvider(nextProvider)
+              setCommandHistory((previous) => [
+                ...previous,
+                {
+                  command: `Switched to ${PROVIDER_INFO[nextProvider].name} (${PROVIDER_INFO[nextProvider].model})`,
+                  timestamp: new Date(),
+                  type: 'system',
+                },
+              ])
+            } else {
+              setCommandHistory((previous) => [
+                ...previous,
+                {
+                  command: 'Available providers: openai, anthropic, google, groq',
+                  timestamp: new Date(),
+                  type: 'system',
+                },
+              ])
+            }
+            return
           }
-          return
 
-        case '/status':
-          setIsProcessing(true)
-          try {
-            const res = await fetch('/api/health')
-            const data = await res.json()
-            setCommandHistory(prev => [...prev, {
-              command: `
+          case '/status':
+            setIsProcessing(true)
+            try {
+              const response = await fetch('/api/health')
+              if (!response.ok) throw new Error(`Health endpoint returned ${response.status}`)
+              const data = await response.json()
+              const services = Object.values(data.services ?? {}) as Array<{ status?: string }>
+              setCommandHistory((previous) => [
+                ...previous,
+                {
+                  command: `
 SYSTEM STATUS
 -------------
 Overall: ${data.status?.toUpperCase() || 'OPERATIONAL'}
 API Latency: ${data.services?.api?.latency || 'N/A'}ms
-Services Online: ${Object.values(data.services || {}).filter((s: any) => s.status === 'healthy').length}/${Object.keys(data.services || {}).length}
+Services Online: ${services.filter((service) => service.status === 'healthy').length}/${services.length}
 Node: AU-WEST-1
 Protocol: v2.6.01`,
-              timestamp: new Date(),
-              type: 'system'
-            }])
-          } catch {
-            setCommandHistory(prev => [...prev, {
-              command: 'ERROR: Could not fetch system status',
-              timestamp: new Date(),
-              type: 'system'
-            }])
+                  timestamp: new Date(),
+                  type: 'system',
+                },
+              ])
+            } catch {
+              setCommandHistory((previous) => [
+                ...previous,
+                {
+                  command: 'ERROR: Could not fetch system status',
+                  timestamp: new Date(),
+                  type: 'system',
+                },
+              ])
+            } finally {
+              setIsProcessing(false)
+            }
+            return
+
+          case '/scan': {
+            const email = args[0] || 'demo@example.com'
+            setCommandHistory((previous) => [
+              ...previous,
+              {
+                command: `Initiating OSINT scan for: ${email}...`,
+                timestamp: new Date(),
+                type: 'system',
+              },
+            ])
+            await sendPrompt(
+              `Run a privacy exposure scan for the email "${email}". Provide a detailed analysis of potential exposures across data brokers, breach databases, and dark web sources. Format the results clearly.`,
+            )
+            return
           }
-          setIsProcessing(false)
-          return
 
-        case '/scan':
-          const email = args[0] || 'demo@example.com'
-          setIsProcessing(true)
-          setCommandHistory(prev => [...prev, {
-            command: `Initiating OSINT scan for: ${email}...`,
-            timestamp: new Date(),
-            type: 'system'
-          }])
-          // Delegate to AI for scan interpretation
-          await append({
-            role: 'user',
-            content: `Run a privacy exposure scan for the email "${email}". Provide a detailed analysis of potential exposures across data brokers, breach databases, and dark web sources. Format the results clearly.`
-          })
-          return
+          case '/analyze':
+            await sendPrompt(
+              'Perform a comprehensive threat analysis on my current privacy exposure. Consider data brokers, recent breaches, and potential attack vectors. Provide actionable recommendations.',
+            )
+            return
 
-        case '/analyze':
-          setIsProcessing(true)
-          await append({
-            role: 'user',
-            content: 'Perform a comprehensive threat analysis on my current privacy exposure. Consider data brokers, recent breaches, and potential attack vectors. Provide actionable recommendations.'
-          })
-          return
+          case '/draft': {
+            const documentType = args[0] || 'statutory-demand'
+            await sendPrompt(
+              `Generate a ${documentType} document template under Australian Privacy law. Include all required legal references and formatting.`,
+            )
+            return
+          }
 
-        case '/draft':
-          const docType = args[0] || 'statutory-demand'
-          setIsProcessing(true)
-          await append({
-            role: 'user',
-            content: `Generate a ${docType} document template under Australian Privacy law. Include all required legal references and formatting.`
-          })
-          return
+          case '/predict':
+            await sendPrompt(
+              'Based on current privacy threat trends, predict potential future exposures and risks. Provide short-term, medium-term, and long-term predictions with probability assessments.',
+            )
+            return
 
-        case '/predict':
-          setIsProcessing(true)
-          await append({
-            role: 'user',
-            content: 'Based on current privacy threat trends, predict potential future exposures and risks. Provide short-term, medium-term, and long-term predictions with probability assessments.'
-          })
-          return
-
-        default:
-          setCommandHistory(prev => [...prev, {
-            command: `Unknown command: ${cmd}. Type /help for available commands.`,
-            timestamp: new Date(),
-            type: 'system'
-          }])
-          return
+          default:
+            setCommandHistory((previous) => [
+              ...previous,
+              {
+                command: `Unknown command: ${command}. Type /help for available commands.`,
+                timestamp: new Date(),
+                type: 'system',
+              },
+            ])
+            return
+        }
       }
-    }
 
-    // Regular chat message
-    setIsProcessing(true)
-    await append({
-      role: 'user',
-      content: trimmed
-    })
-  }, [append, provider])
+      await sendPrompt(trimmed)
+    },
+    [isLoading, sendPrompt],
+  )
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    handleCommand(inputValue)
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    void handleCommand(inputValue)
     setInputValue('')
-  }
-
-  const handleQuickCommand = (cmd: string) => {
-    handleCommand(cmd)
   }
 
   return (
     <div className={`bg-zinc-950 border border-zinc-800 flex flex-col ${className}`}>
-      {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800 bg-black/50">
         <div className="flex items-center gap-2">
           <Terminal className="h-4 w-4 text-yellow-500" />
           <span className="text-xs font-mono font-bold text-white tracking-wider">ADR.COMMAND.AI</span>
           <span className="text-[10px] font-mono text-zinc-600">v2.0.0</span>
         </div>
-        
-        {/* Provider Selector */}
+
         <div className="relative">
           <button
             onClick={() => setShowProviderSelect(!showProviderSelect)}
@@ -259,7 +303,7 @@ Protocol: v2.6.01`,
             <span className="text-[10px] font-mono text-zinc-400">{PROVIDER_INFO[provider].name}</span>
             <ChevronDown className="h-3 w-3 text-zinc-500" />
           </button>
-          
+
           {showProviderSelect && (
             <div className="absolute right-0 top-full mt-1 bg-zinc-900 border border-zinc-800 z-50 min-w-[160px]">
               {Object.entries(PROVIDER_INFO).map(([key, info]) => (
@@ -268,11 +312,14 @@ Protocol: v2.6.01`,
                   onClick={() => {
                     setProvider(key as AIProvider)
                     setShowProviderSelect(false)
-                    setCommandHistory(prev => [...prev, {
-                      command: `Switched to ${info.name} (${info.model})`,
-                      timestamp: new Date(),
-                      type: 'system'
-                    }])
+                    setCommandHistory((previous) => [
+                      ...previous,
+                      {
+                        command: `Switched to ${info.name} (${info.model})`,
+                        timestamp: new Date(),
+                        type: 'system',
+                      },
+                    ])
                   }}
                   className={`w-full px-3 py-2 text-left hover:bg-zinc-800 flex items-center gap-2 ${
                     provider === key ? 'bg-zinc-800' : ''
@@ -290,50 +337,45 @@ Protocol: v2.6.01`,
         </div>
       </div>
 
-      {/* Quick Commands */}
       <div className="flex items-center gap-1 px-2 py-1.5 border-b border-zinc-800/50 overflow-x-auto scrollbar-hide">
-        {QUICK_COMMANDS.map((qc) => (
+        {QUICK_COMMANDS.map((quickCommand) => (
           <button
-            key={qc.cmd}
-            onClick={() => handleQuickCommand(qc.cmd)}
+            key={quickCommand.cmd}
+            onClick={() => void handleCommand(quickCommand.cmd)}
             className="flex items-center gap-1.5 px-2 py-1 bg-zinc-900/50 border border-zinc-800 hover:border-yellow-500/30 hover:bg-zinc-900 transition-colors shrink-0"
-            title={qc.description}
+            title={quickCommand.description}
           >
-            <qc.icon className="h-3 w-3 text-yellow-500" />
-            <span className="text-[10px] font-mono text-zinc-400">{qc.label}</span>
+            <quickCommand.icon className="h-3 w-3 text-yellow-500" />
+            <span className="text-[10px] font-mono text-zinc-400">{quickCommand.label}</span>
           </button>
         ))}
       </div>
 
-      {/* Terminal Output */}
-      <div 
+      <div
         ref={terminalRef}
         className="flex-1 overflow-y-auto p-4 font-mono text-xs space-y-1 min-h-[200px] max-h-[400px]"
       >
-        {commandHistory.map((item, idx) => (
-          <div 
-            key={idx}
+        {commandHistory.map((item, index) => (
+          <div
+            key={`${item.timestamp.getTime()}-${index}`}
             className={`whitespace-pre-wrap ${
-              item.type === 'user' 
-                ? 'text-yellow-400' 
-                : item.type === 'ai' 
-                ? 'text-emerald-400' 
-                : 'text-zinc-500'
+              item.type === 'user'
+                ? 'text-yellow-400'
+                : item.type === 'ai'
+                  ? 'text-emerald-400'
+                  : 'text-zinc-500'
             }`}
           >
             {item.command}
           </div>
         ))}
-        
-        {/* Streaming AI Response */}
+
         {isLoading && messages.length > 0 && (
           <div className="text-emerald-400 whitespace-pre-wrap">
-            {messages[messages.length - 1]?.role === 'assistant' 
-              ? messages[messages.length - 1].content 
-              : ''}
+            {messages.at(-1)?.role === 'assistant' ? messageText(messages.at(-1) as UIMessage) : ''}
           </div>
         )}
-        
+
         {(isProcessing || isLoading) && (
           <div className="flex items-center gap-2 text-zinc-500">
             <Loader2 className="h-3 w-3 animate-spin" />
@@ -342,7 +384,6 @@ Protocol: v2.6.01`,
         )}
       </div>
 
-      {/* Input */}
       <form onSubmit={handleSubmit} className="border-t border-zinc-800 p-2">
         <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-3 py-2">
           <span className="text-yellow-500 font-mono text-sm">{'>'}</span>
@@ -350,7 +391,7 @@ Protocol: v2.6.01`,
             ref={inputRef}
             type="text"
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(event) => setInputValue(event.target.value)}
             placeholder="Type a command or ask a question..."
             className="flex-1 bg-transparent text-white text-sm font-mono outline-none placeholder:text-zinc-600"
             disabled={isProcessing || isLoading}
