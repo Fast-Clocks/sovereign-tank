@@ -1,15 +1,12 @@
 name: APN Quality Gate
 
-# This repo had NO CI at all. Every check below runs and blocks — there is no
-# `continue-on-error` here on purpose. A mandatory check that cannot fail is not
-# a check, and this estate has already shipped two of those.
-#
-# QUALITY-GATE.md's product checks (live domain, responsive, keyboard, contrast,
-# metadata, conversion path) are NOT covered here. A green run means the code
-# compiles and lints. It does not mean the site works.
+# Code-level gate only. A green run proves installation, lint, typecheck, build
+# and dependency-audit execution for this exact commit. It does not prove live
+# provider behaviour, domain routing or production readiness.
 
 on:
   pull_request:
+    branches: [main]
   push:
     branches: [main]
 
@@ -25,32 +22,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      # SHA-pinned, matching apn-hub — the healthiest repo in the estate and the
-      # one whose own operating law asks for it. A tag is mutable; a SHA is not,
-      # so a compromised or retagged action cannot silently enter the build.
-      # These two SHAs are already running green on apn-hub's route-verification
-      # workflow, so they are trusted here rather than newly introduced.
-      #
-      # v6 also clears the runner deprecation notice that appeared on EVERY run
-      # of this gate: "The following actions target Node.js 20 but are being
-      # forced to run on Node.js 24". Nothing was broken — the runner was already
-      # forcing Node 24 — but a permanent warning on a green run is exactly the
-      # noise that trains people to stop reading logs.
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
-      # pnpm/action-setup needs an explicit version, or a `packageManager` field
-      # in package.json. Without either it hard-errors with "No pnpm version is
-      # specified" — which is exactly how the first run of this workflow failed.
-      # Pinned to the major that wrote pnpm-lock.yaml (lockfileVersion 9.0).
-      # NOT bumped, and not silently. pnpm/action-setup is outside this session's
-      # repository scope, so whether a major beyond v4 exists could not be
-      # verified — and bumping an action to a version nobody confirmed exists is
-      # how a gate breaks. Left at v4; Dependabot's github-actions ecosystem
-      # (configured in .github/dependabot.yml) will propose the bump when there
-      # is one, with a diff a human can read.
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
           version: 10
 
@@ -66,22 +44,14 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
-      # NOTE: `pnpm run typecheck` is deliberately NOT a step yet. It currently
-      # reports 11 errors, all the AI SDK v6 useChat migration in two chat
-      # components (see next.config.mjs). Adding it as continue-on-error would be
-      # a check that cannot fail — the exact anti-pattern this estate has been
-      # removing. Add it as a BLOCKING step the moment that migration lands.
+      - name: Typecheck
+        run: pnpm run typecheck
 
       - name: Production build
         run: pnpm run build
 
-      # Advisory, not blocking: the remaining highs are dev-only (the eslint
-      # toolchain), and failing the build on a transitive tooling advisory we
-      # cannot act on teaches people to ignore the gate. The PRODUCTION tree is
-      # what must stay clean, and that is the check above it.
       - name: Audit production dependencies
         run: pnpm audit --prod --audit-level high
 
-      - name: Audit all dependencies (advisory)
+      - name: Audit all dependencies
         run: pnpm audit --audit-level high
-        continue-on-error: true
