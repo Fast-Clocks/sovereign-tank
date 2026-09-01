@@ -4,15 +4,29 @@ import { SYSTEM_PROMPTS } from '@/lib/ai-orchestrator'
 export const runtime = 'nodejs'
 export const maxDuration = 60
 
-type AIProvider = 'openai' | 'anthropic'
+const PROVIDER_CONFIG = {
+  openai: {
+    model: 'openai/gpt-4o',
+    gatewayProvider: 'openai',
+  },
+  anthropic: {
+    model: 'anthropic/claude-sonnet-4',
+    gatewayProvider: 'anthropic',
+  },
+  google: {
+    model: 'google/gemini-2.0-flash',
+    gatewayProvider: 'google',
+  },
+  groq: {
+    model: 'meta/llama-3.3-70b',
+    gatewayProvider: 'groq',
+  },
+} as const
 
-const PROVIDER_MODELS: Record<AIProvider, string> = {
-  openai: 'openai/gpt-4o',
-  anthropic: 'anthropic/claude-sonnet-4-20250514',
-}
+type AIProvider = keyof typeof PROVIDER_CONFIG
 
 function isAIProvider(value: unknown): value is AIProvider {
-  return value === 'openai' || value === 'anthropic'
+  return typeof value === 'string' && value in PROVIDER_CONFIG
 }
 
 export async function POST(req: Request) {
@@ -22,7 +36,6 @@ export async function POST(req: Request) {
       provider?: unknown
     }
     const { messages } = body
-    const provider: AIProvider = isAIProvider(body.provider) ? body.provider : 'openai'
 
     if (!Array.isArray(messages)) {
       return Response.json(
@@ -31,38 +44,58 @@ export async function POST(req: Request) {
       )
     }
 
-    const gatewayModel = PROVIDER_MODELS[provider]
+    if (body.provider !== undefined && !isAIProvider(body.provider)) {
+      return Response.json(
+        { error: 'Unsupported AI provider' },
+        { status: 400 },
+      )
+    }
+
+    const provider: AIProvider = body.provider ?? 'openai'
+    const configuration = PROVIDER_CONFIG[provider]
 
     const systemPrompt = `${SYSTEM_PROMPTS['nlp-query']}
 
-You are the ADR Command AI - an intelligent assistant for the Australian Data Removal platform.
-You have access to the following capabilities:
-- Privacy exposure scanning and analysis
-- Data broker intelligence and removal strategies
-- Threat analysis and prediction
-- Legal document drafting under Australian law
-- Natural language querying of privacy data
+You are the ADR Privacy Assistant for an Australian privacy software prototype.
+Provide careful, practical, general information. You are not a lawyer and must
+not describe your output as legal advice or a substitute for professional advice.
 
-When users ask about their privacy status, data exposures, or removal progress, provide helpful and actionable responses.
-Always maintain a professional, security-focused tone.
-Reference Australian privacy law (Privacy Act 1988, APPs) where relevant.
+Evidence and capability rules:
+- Do not claim that you searched, scanned, monitored, verified, removed or accessed
+  any live account, data broker, breach database, dark-web source or external system
+  unless verified tool results are supplied in the current request.
+- Do not invent exposure findings, removal progress, operational status, customer
+  records, metrics, provider availability or legal outcomes.
+- When the user asks for a scan without verified scan data, explain that no live scan
+  occurred and provide a safe assessment plan, checklist or interpretation framework.
+- Distinguish confirmed facts, user-provided information, assumptions and examples.
+- Treat legal-document drafting as a clearly labelled starting template requiring
+  review for the user's facts, jurisdiction and current law.
+- Do not solicit secrets, passwords, authentication codes, full payment-card details
+  or unnecessary sensitive personal information.
 
-Current system status: OPERATIONAL
-Active monitoring: 4,200+ data brokers globally
-Legal framework: Australian Privacy Principles (APPs) 1-13`
+Where relevant, explain the Privacy Act 1988 and Australian Privacy Principles in
+plain language, but state uncertainty and recommend an appropriately qualified
+professional for fact-specific legal conclusions.`
 
     const result = streamText({
-      model: gatewayModel,
+      model: configuration.model,
       system: systemPrompt,
       messages: await convertToModelMessages(messages),
       maxOutputTokens: 2048,
-      temperature: 0.7,
+      temperature: 0.4,
+      providerOptions: {
+        gateway: {
+          only: [configuration.gatewayProvider],
+        },
+      },
     })
 
     return result.toUIMessageStreamResponse({
       headers: {
-        'X-ADR-AI-Capability': 'chat',
-        'X-ADR-AI-Model': gatewayModel,
+        'X-ADR-AI-Capability': 'general-guidance',
+        'X-ADR-AI-Model': configuration.model,
+        'X-ADR-AI-Provider': configuration.gatewayProvider,
       },
     })
   } catch (error) {
