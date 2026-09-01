@@ -1,31 +1,44 @@
-import { streamText } from 'ai'
+import { convertToModelMessages, streamText, type UIMessage } from 'ai'
 import { SYSTEM_PROMPTS } from '@/lib/ai-orchestrator'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
 
+type AIProvider = 'openai' | 'anthropic'
+
+const PROVIDER_MODELS: Record<AIProvider, string> = {
+  openai: 'openai/gpt-4o',
+  anthropic: 'anthropic/claude-sonnet-4-20250514',
+}
+
+function isAIProvider(value: unknown): value is AIProvider {
+  return value === 'openai' || value === 'anthropic'
+}
+
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
-    const { messages, provider = 'openai' } = body
+    const body = (await req.json()) as {
+      messages?: UIMessage[]
+      provider?: unknown
+    }
+    const { messages } = body
+    const provider: AIProvider = isAIProvider(body.provider) ? body.provider : 'openai'
 
-    if (!messages || !Array.isArray(messages)) {
+    if (!Array.isArray(messages)) {
       return Response.json(
         { error: 'Missing or invalid messages array' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
-    const gatewayModel = provider === 'anthropic' 
-      ? 'anthropic/claude-sonnet-4-20250514' 
-      : 'openai/gpt-4o'
+    const gatewayModel = PROVIDER_MODELS[provider]
 
     const systemPrompt = `${SYSTEM_PROMPTS['nlp-query']}
 
 You are the ADR Command AI - an intelligent assistant for the Australian Data Removal platform.
 You have access to the following capabilities:
 - Privacy exposure scanning and analysis
-- Data broker intelligence and removal strategies  
+- Data broker intelligence and removal strategies
 - Threat analysis and prediction
 - Legal document drafting under Australian law
 - Natural language querying of privacy data
@@ -41,7 +54,7 @@ Legal framework: Australian Privacy Principles (APPs) 1-13`
     const result = streamText({
       model: gatewayModel,
       system: systemPrompt,
-      messages,
+      messages: await convertToModelMessages(messages),
       maxOutputTokens: 2048,
       temperature: 0.7,
     })
@@ -53,10 +66,10 @@ Legal framework: Australian Privacy Principles (APPs) 1-13`
       },
     })
   } catch (error) {
-    console.error('[v0] Chat error:', error)
+    console.error('[ADR AI] Chat error:', error)
     return Response.json(
       { error: 'Chat processing failed' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
