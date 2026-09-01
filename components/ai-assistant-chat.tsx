@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useChat } from '@ai-sdk/react'
+import { DefaultChatTransport, type UIMessage } from 'ai'
 import { Bot, User, Send, Loader2, Sparkles, X, Minimize2, Maximize2 } from 'lucide-react'
 
 type AIProvider = 'openai' | 'anthropic' | 'google' | 'groq'
@@ -16,27 +17,61 @@ const INITIAL_MESSAGE = `Hello! I'm the ADR Privacy Assistant powered by AI. I c
 
 How can I assist you today?`
 
+const INITIAL_MESSAGES: UIMessage[] = [
+  {
+    id: 'initial',
+    role: 'assistant',
+    parts: [{ type: 'text', text: INITIAL_MESSAGE }],
+  },
+]
+
+function messageText(message: UIMessage): string {
+  return message.parts
+    .filter((part) => part.type === 'text')
+    .map((part) => part.text)
+    .join('')
+}
+
 export function AIAssistantChat({ className = '' }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
   const [provider, setProvider] = useState<AIProvider>('openai')
+  const [input, setInput] = useState('')
+  const providerRef = useRef<AIProvider>(provider)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, setMessages } = useChat({
-    api: '/api/ai/chat',
-    body: { provider },
-    initialMessages: [
-      {
-        id: 'initial',
-        role: 'assistant',
-        content: INITIAL_MESSAGE,
-      }
-    ],
+  useEffect(() => {
+    providerRef.current = provider
+  }, [provider])
+
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: '/api/ai/chat',
+        body: () => ({ provider: providerRef.current }),
+      }),
+    [],
+  )
+
+  const { messages, sendMessage, status } = useChat({
+    transport,
+    messages: INITIAL_MESSAGES,
   })
+
+  const isLoading = status === 'submitted' || status === 'streaming'
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const text = input.trim()
+    if (!text || isLoading) return
+
+    setInput('')
+    await sendMessage({ text })
+  }
 
   if (!isOpen) {
     return (
@@ -52,12 +87,11 @@ export function AIAssistantChat({ className = '' }: { className?: string }) {
   }
 
   return (
-    <div 
+    <div
       className={`fixed bottom-6 right-6 z-50 bg-zinc-950 border border-zinc-800 shadow-2xl shadow-black/50 transition-all ${
         isMinimized ? 'w-72 h-12' : 'w-96 h-[500px]'
       } flex flex-col ${className}`}
     >
-      {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 bg-black/50">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-yellow-500" />
@@ -65,9 +99,10 @@ export function AIAssistantChat({ className = '' }: { className?: string }) {
           <span className="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5">ONLINE</span>
         </div>
         <div className="flex items-center gap-1">
-          <button 
+          <button
             onClick={() => setIsMinimized(!isMinimized)}
             className="p-1 hover:bg-zinc-800 transition-colors"
+            aria-label={isMinimized ? 'Expand AI assistant' : 'Minimize AI assistant'}
           >
             {isMinimized ? (
               <Maximize2 className="h-3.5 w-3.5 text-zinc-400" />
@@ -75,9 +110,10 @@ export function AIAssistantChat({ className = '' }: { className?: string }) {
               <Minimize2 className="h-3.5 w-3.5 text-zinc-400" />
             )}
           </button>
-          <button 
+          <button
             onClick={() => setIsOpen(false)}
             className="p-1 hover:bg-zinc-800 transition-colors"
+            aria-label="Close AI assistant"
           >
             <X className="h-3.5 w-3.5 text-zinc-400" />
           </button>
@@ -86,35 +122,35 @@ export function AIAssistantChat({ className = '' }: { className?: string }) {
 
       {!isMinimized && (
         <>
-          {/* Provider Toggle */}
           <div className="flex items-center gap-1 px-2 py-1.5 border-b border-zinc-800/50 overflow-x-auto">
-            {(['openai', 'anthropic', 'google', 'groq'] as AIProvider[]).map((p) => (
+            {(['openai', 'anthropic', 'google', 'groq'] as AIProvider[]).map((candidate) => (
               <button
-                key={p}
-                onClick={() => setProvider(p)}
+                key={candidate}
+                onClick={() => setProvider(candidate)}
                 className={`px-2 py-1 text-[10px] font-mono transition-colors ${
-                  provider === p 
-                    ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/30' 
+                  provider === candidate
+                    ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/30'
                     : 'text-zinc-500 hover:text-zinc-300 border border-transparent'
                 }`}
               >
-                {p.toUpperCase()}
+                {candidate.toUpperCase()}
               </button>
             ))}
           </div>
 
-          {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.map((message) => (
-              <div 
+              <div
                 key={message.id}
                 className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
               >
-                <div className={`shrink-0 h-8 w-8 flex items-center justify-center ${
-                  message.role === 'user' 
-                    ? 'bg-yellow-500/20 text-yellow-500' 
-                    : 'bg-zinc-800 text-zinc-400'
-                }`}>
+                <div
+                  className={`shrink-0 h-8 w-8 flex items-center justify-center ${
+                    message.role === 'user'
+                      ? 'bg-yellow-500/20 text-yellow-500'
+                      : 'bg-zinc-800 text-zinc-400'
+                  }`}
+                >
                   {message.role === 'user' ? (
                     <User className="h-4 w-4" />
                   ) : (
@@ -122,17 +158,19 @@ export function AIAssistantChat({ className = '' }: { className?: string }) {
                   )}
                 </div>
                 <div className={`flex-1 ${message.role === 'user' ? 'text-right' : ''}`}>
-                  <p className={`text-xs leading-relaxed whitespace-pre-wrap ${
-                    message.role === 'user' 
-                      ? 'text-zinc-300 bg-zinc-900 p-3 inline-block' 
-                      : 'text-zinc-400'
-                  }`}>
-                    {message.content}
+                  <p
+                    className={`text-xs leading-relaxed whitespace-pre-wrap ${
+                      message.role === 'user'
+                        ? 'text-zinc-300 bg-zinc-900 p-3 inline-block'
+                        : 'text-zinc-400'
+                    }`}
+                  >
+                    {messageText(message)}
                   </p>
                 </div>
               </div>
             ))}
-            
+
             {isLoading && (
               <div className="flex gap-3">
                 <div className="shrink-0 h-8 w-8 flex items-center justify-center bg-zinc-800 text-zinc-400">
@@ -147,13 +185,12 @@ export function AIAssistantChat({ className = '' }: { className?: string }) {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
           <form onSubmit={handleSubmit} className="border-t border-zinc-800 p-3">
             <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-3 py-2">
               <input
                 type="text"
                 value={input}
-                onChange={handleInputChange}
+                onChange={(event) => setInput(event.target.value)}
                 placeholder="Ask anything about privacy..."
                 className="flex-1 bg-transparent text-white text-xs font-mono outline-none placeholder:text-zinc-600"
                 disabled={isLoading}
