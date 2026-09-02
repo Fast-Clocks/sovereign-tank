@@ -112,11 +112,11 @@ Consider:
       model: gatewayModel,
       system: SYSTEM_PROMPTS['predictive-threat'],
       prompt: predictionPrompt,
-      maxTokens: 4096,
+      maxOutputTokens: 4096,
       temperature: 0.4,
     })
 
-    return result.toDataStreamResponse({
+    return result.toUIMessageStreamResponse({
       headers: {
         'X-ADR-AI-Capability': 'predictive-threat',
         'X-ADR-AI-Model': gatewayModel,

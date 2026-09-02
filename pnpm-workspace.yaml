@@ -1,0 +1,60 @@
+allowBuilds:
+  unrs-resolver: set this to true or false
+
+# pnpm settings live HERE, not in package.json's `pnpm` field.
+#
+# pnpm 11 STOPPED READING the `pnpm` field in package.json. It warns and moves
+# on: "The 'pnpm' field in package.json is no longer read by pnpm. The following
+# keys were ignored: onlyBuiltDependencies, overrides."
+#
+# That warning is easy to skim past and expensive to ignore. The overrides below
+# are the ONLY thing pinning picomatch, lodash and d3-color to patched versions —
+# they arrive transitively through tailwindcss-animate -> tailwindcss@3,
+# recharts@2 and react-simple-maps, none of which can be upgraded without a major
+# migration each. Under pnpm 11 with the settings still in package.json, these
+# pins silently evaporate and `pnpm audit` finds high-severity advisories again.
+#
+# Until this file existed, the only thing standing between this repo and that
+# regression was `version: 10` pinned in CI — which had been added for an
+# entirely unrelated reason (pnpm/action-setup erroring with "No pnpm version is
+# specified"). Correct behaviour resting on a coincidence is not correct
+# behaviour; it is a latent failure with good luck in front of it.
+onlyBuiltDependencies:
+  - sharp
+
+overrides:
+  '@types/react': 19.2.7
+  '@types/react-dom': 19.2.3
+  picomatch: ^4.0.4
+  lodash: ^4.18.0
+  d3-color: ^3.1.0
+
+# Explicitly ignored, not silently skipped.
+#
+# `unrs-resolver` is a native-binary module pulled in by the eslint toolchain. It
+# wants to run a postinstall build script; we do not want arbitrary build scripts
+# executing on install, so it stays unbuilt — the prebuilt binary it ships is
+# what gets used.
+#
+# Declaring it here matters for the pnpm 11 upgrade path: pnpm 10 treats an
+# unlisted build script as a WARNING and exits 0, while pnpm 11 raises
+# ERR_PNPM_IGNORED_BUILDS and exits 1. Measured, not assumed — without this list
+# `pnpm@11 install --frozen-lockfile` exits 1 on this repo while pnpm@10 exits 0.
+# Left undeclared, the first person to bump CI to pnpm 11 gets a red build with
+# no obvious cause.
+#
+# HONEST LIMIT — this does NOT make pnpm 11 work. Measured: with this list
+# present, `pnpm@11 install --frozen-lockfile` still exits 1 on
+# ERR_PNPM_IGNORED_BUILDS, because pnpm 11 supersedes both lists with a new
+# per-package `allowBuilds` setting that demands an explicit true/false
+# (`pnpm config list` reports: "unrs-resolver": "set this to true or false").
+# `allowBuilds` is NOT accepted in this file — pnpm rejects it as an unknown
+# workspace key, on BOTH majors. So a pnpm 11 upgrade remains blocked on a
+# separate decision: allow unrs-resolver's postinstall script to run, or find
+# another route. That decision is deliberately not taken here — enabling a
+# postinstall build script on a privacy product is not a housekeeping change.
+#
+# What this file DOES fix is the dangerous half, and it is fixed for both
+# majors: the overrides above no longer depend on the CI pnpm pin.
+ignoredBuiltDependencies:
+  - unrs-resolver

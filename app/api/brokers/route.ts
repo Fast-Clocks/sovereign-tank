@@ -25,7 +25,7 @@ function generateBrokerData(count: number) {
     const suffix = i >= allBrokerNames.length ? ` ${Math.floor(i / allBrokerNames.length) + 1}` : ''
     const category = Object.entries(brokerCategories).find(([_, names]) => names.includes(baseName))?.[0] || 'unknown'
     
-    const exposedData = []
+    const exposedData: string[] = []
     const numDataTypes = Math.floor(Math.random() * 5) + 2
     for (let j = 0; j < numDataTypes; j++) {
       const randomData = dataTypes[Math.floor(Math.random() * dataTypes.length)]
