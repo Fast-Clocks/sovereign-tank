@@ -52,7 +52,7 @@ npm run build
 
 | Check | Result |
 |-------|--------|
-| Branch | main only |
+| Branches | `main` plus active hardening review branch `claude/security-and-quality-gate` |
 | Protection | Enabled — no force push, no branch deletion |
 | Compliance scan | Clean (post-fix) |
 | External fonts | Removed from CSP |
