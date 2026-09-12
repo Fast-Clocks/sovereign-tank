@@ -1,0 +1,29 @@
+allowBuilds:
+  unrs-resolver: set this to true or false
+
+# pnpm settings live HERE, not in package.json's `pnpm` field.
+#
+# pnpm 11 STOPPED READING the `pnpm` field in package.json. It warns and moves
+# on: "The 'pnpm' field in package.json is no longer read by pnpm. The following
+# keys were ignored: onlyBuiltDependencies, overrides."
+#
+# These overrides are the single dependency-policy source. Keep security pins
+# together here so regenerating the lockfile cannot silently replace one fix
+# with another.
+onlyBuiltDependencies:
+  - sharp
+
+overrides:
+  '@types/react': 19.2.7
+  '@types/react-dom': 19.2.3
+  picomatch: ^4.0.4
+  lodash: ^4.18.0
+  d3-color: ^3.1.0
+  js-yaml: 4.3.2
+
+# Explicitly ignored, not silently skipped.
+# `unrs-resolver` ships a prebuilt binary and does not need its postinstall build
+# script for the current pnpm 10 gate. Do not enable arbitrary install scripts as
+# a housekeeping workaround.
+ignoredBuiltDependencies:
+  - unrs-resolver

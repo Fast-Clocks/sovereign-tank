@@ -103,7 +103,7 @@ export function SystemHealthPanel() {
             </div>
             <div>
               <h3 className="text-sm font-black text-white tracking-tight">SYSTEM.HEALTH</h3>
-              <p className="text-[10px] text-zinc-500 font-mono tracking-wider">{health.node.id} // {health.node.location}</p>
+              <p className="text-[10px] text-zinc-500 font-mono tracking-wider">{health.node.id} {"//"} {health.node.location}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -166,7 +166,7 @@ export function SystemHealthPanel() {
       {/* Footer */}
       <div className="border-t border-zinc-800 px-4 py-2 flex items-center justify-between">
         <span className="text-[9px] font-mono text-zinc-600">
-          v{health.version.api} // {health.version.protocol}
+          v{health.version.api} {"//"} {health.version.protocol}
         </span>
         <span className="text-[9px] font-mono text-zinc-600">
           Updated: {lastUpdate?.toLocaleTimeString()}

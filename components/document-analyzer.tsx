@@ -48,24 +48,11 @@ export function DocumentAnalyzer({ className = '' }: { className?: string }) {
     }
   }, [])
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
-
-    const files = e.dataTransfer.files
-    if (files && files[0]) {
-      processFile(files[0])
-    }
-  }, [])
-
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (files && files[0]) {
-      processFile(files[0])
-    }
-  }, [])
-
+  // `processFile` is declared here rather than below the two useCallback hooks
+  // that call it. Previously it sat after them, so both closures referenced a
+  // const in its temporal dead zone (react-hooks: 'Cannot access variable before
+  // it is declared'). Moving the declaration up is behaviour-neutral and removes
+  // the hazard rather than suppressing the warning about it.
   const processFile = async (selectedFile: File) => {
     setFile(selectedFile)
     setError(null)
@@ -110,6 +97,25 @@ export function DocumentAnalyzer({ className = '' }: { className?: string }) {
       setIsAnalyzing(false)
     }
   }
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+
+    const files = e.dataTransfer.files
+    if (files && files[0]) {
+      processFile(files[0])
+    }
+  }, [])
+
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (files && files[0]) {
+      processFile(files[0])
+    }
+  }, [])
+
 
   const getRiskColor = (risk: string) => {
     switch (risk) {

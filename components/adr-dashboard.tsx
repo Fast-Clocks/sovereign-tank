@@ -127,12 +127,16 @@ export function ADRDashboard() {
   const [isPurging, setIsPurging] = useState(false)
   const [scanningRegion, setScanningRegion] = useState<Region | null>(null)
   const [hotspotStates, setHotspotStates] = useState<{ [key: string]: 'hostile' | 'clearing' }>(
-    Object.fromEntries(worldHotspots.map(h => [h.region, 'hostile' as const]))
+    // `h.region` does not exist on Region — the field is `name`. Every key was
+    // therefore `undefined`, so Object.fromEntries collapsed all six hotspots
+    // into a single "undefined" entry and they all shared one state.
+    Object.fromEntries(worldHotspots.map(h => [h.name, 'hostile' as const]))
   )
 
   useEffect(() => {
     try {
       const brokers = generateBrokers()
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- client-only init; a lazy useState initialiser would run during SSR and cause a hydration mismatch
       setAllBrokers(brokers)
       console.log('[v0] Successfully loaded', brokers.length, 'brokers')
     } catch (error) {
@@ -148,6 +152,7 @@ export function ADRDashboard() {
       if (allBrokers.length > 0) {
         const startIdx = (currentPage - 1) * brokersPerPage
         const endIdx = startIdx + brokersPerPage
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- client-only init; a lazy useState initialiser would run during SSR and cause a hydration mismatch
         setDisplayedBrokers(allBrokers.slice(startIdx, endIdx))
       }
     } catch (error) {
@@ -599,4 +604,5 @@ export function ADRDashboard() {
   )
 }
 
-export { ADRDashboard }
+// `ADRDashboard` is already exported at its declaration above; this second
+// `export { ADRDashboard }` was a duplicate export of the same binding (TS2323/TS2484).

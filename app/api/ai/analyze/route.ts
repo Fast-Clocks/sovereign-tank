@@ -72,11 +72,11 @@ Provide your analysis in the following JSON structure:
       model: gatewayModel,
       system: SYSTEM_PROMPTS['threat-analysis'],
       prompt: analysisPrompt,
-      maxTokens: 4096,
+      maxOutputTokens: 4096,
       temperature: 0.3,
     })
 
-    return result.toDataStreamResponse({
+    return result.toUIMessageStreamResponse({
       headers: {
         'X-ADR-AI-Capability': 'threat-analysis',
         'X-ADR-AI-Model': gatewayModel,

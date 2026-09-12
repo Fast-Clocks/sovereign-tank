@@ -12,6 +12,7 @@ export function DataCollectionNotice() {
     try {
       const hasConsented = localStorage.getItem('adr-privacy-consent')
       if (!hasConsented) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- client-only init; a lazy useState initialiser would run during SSR and cause a hydration mismatch
         setIsVisible(true)
       }
     } catch (error) {

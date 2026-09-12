@@ -63,6 +63,7 @@ function ThreatMapComponent({ onNodeClick, className = '' }: ThreatMapProps) {
   })
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- client-only init; a lazy useState initialiser would run during SSR and cause a hydration mismatch
     setAttackVectors(generateAttackVectors())
     
     // Animate stats
