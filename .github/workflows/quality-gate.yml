@@ -1,0 +1,112 @@
+name: APN Standard Quality Gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Reject unresolved merge markers
+        run: |
+          set -euo pipefail
+          if git grep -I -n -E '^(<<<<<<<|=======|>>>>>>>)( |$)' -- .; then
+            echo "Unresolved merge marker detected."
+            exit 1
+          fi
+
+      - name: Select runtime and package manager
+        id: runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -Eq '"node"[[:space:]]*:[[:space:]]*"24' package.json; then
+            echo "node=24" >> "$GITHUB_OUTPUT"
+          else
+            echo "node=22" >> "$GITHUB_OUTPUT"
+          fi
+          if [[ -f pnpm-lock.yaml ]]; then
+            echo "pm=pnpm" >> "$GITHUB_OUTPUT"
+          elif [[ -f package-lock.json ]]; then
+            echo "pm=npm" >> "$GITHUB_OUTPUT"
+          else
+            echo "No supported committed lockfile found."
+            exit 1
+          fi
+
+      - name: Set up pnpm
+        if: steps.runtime.outputs.pm == 'pnpm'
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
+
+      - name: Set up Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: ${{ steps.runtime.outputs.node }}
+
+      - name: Install locked dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ steps.runtime.outputs.pm }}" == "pnpm" ]]; then
+            pnpm install --frozen-lockfile
+          else
+            npm ci
+          fi
+
+      - name: Run repository checks
+        shell: bash
+        env:
+          PM: ${{ steps.runtime.outputs.pm }}
+        run: |
+          set -euo pipefail
+          has_script() {
+            node -e 'const p=require("./package.json"); process.exit(p.scripts && p.scripts[process.argv[1]] ? 0 : 1)' "$1"
+          }
+          run_script() {
+            if has_script "$1"; then
+              "$PM" run "$1"
+            fi
+          }
+          run_script lint
+          run_script typecheck
+          run_script test
+          run_script build
+          run_script verify:cloudflare
+
+      - name: Audit production dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ steps.runtime.outputs.pm }}" == "pnpm" ]]; then
+            pnpm audit --prod --audit-level high
+          else
+            npm audit --omit=dev --audit-level=high
+          fi
+
+      - name: Audit all dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ steps.runtime.outputs.pm }}" == "pnpm" ]]; then
+            pnpm audit --audit-level high
+          else
+            npm audit --audit-level=high
+          fi
