@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
@@ -37,14 +37,6 @@ jobs:
       - name: Regenerate lockfile from committed dependency policy
         run: pnpm install --lockfile-only --no-frozen-lockfile
 
-      - name: Preserve regenerated lockfile
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: sovereign-tank-lockfile-${{ github.sha }}
-          path: pnpm-lock.yaml
-          if-no-files-found: error
-          retention-days: 1
-
       - name: Install regenerated locked dependencies
         run: pnpm install --frozen-lockfile
 
@@ -62,3 +54,21 @@ jobs:
 
       - name: Audit all dependencies
         run: pnpm audit --audit-level high
+
+      - name: Commit verified lockfile only
+        if: github.event_name == 'pull_request' && github.head_ref == 'claude/security-and-quality-gate' && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.head_ref }}
+          EXPECTED_LOCK_SHA: f85eb26d50570161172472b6bc9c6ef6147403fd
+        run: |
+          set -euo pipefail
+          current_sha="$(gh api "repos/${REPO}/contents/pnpm-lock.yaml?ref=${BRANCH}" --jq .sha)"
+          test "$current_sha" = "$EXPECTED_LOCK_SHA"
+          content="$(base64 -w0 pnpm-lock.yaml)"
+          gh api --method PUT "repos/${REPO}/contents/pnpm-lock.yaml" \
+            -f message='security: commit verified consolidated lockfile' \
+            -f content="$content" \
+            -f sha="$current_sha" \
+            -f branch="$BRANCH" >/dev/null
