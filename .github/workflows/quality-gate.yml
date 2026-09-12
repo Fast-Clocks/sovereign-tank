@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
@@ -34,10 +34,7 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: Regenerate lockfile from committed dependency policy
-        run: pnpm install --lockfile-only --no-frozen-lockfile
-
-      - name: Install regenerated locked dependencies
+      - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Lint
@@ -54,23 +51,3 @@ jobs:
 
       - name: Audit all dependencies
         run: pnpm audit --audit-level high
-
-      - name: Commit verified lockfile only
-        if: github.event_name == 'pull_request' && github.head_ref == 'claude/security-and-quality-gate' && github.event.pull_request.head.repo.full_name == github.repository
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          BRANCH: ${{ github.head_ref }}
-          EXPECTED_LOCK_SHA: f85eb26d50570161172472b6bc9c6ef6147403fd
-        run: |
-          set -euo pipefail
-          current_sha="$(gh api "repos/${REPO}/contents/pnpm-lock.yaml?ref=${BRANCH}" --jq .sha)"
-          test "$current_sha" = "$EXPECTED_LOCK_SHA"
-          jq -Rs \
-            --arg message 'security: commit verified consolidated lockfile' \
-            --arg sha "$current_sha" \
-            --arg branch "$BRANCH" \
-            '{message:$message,content:(@base64),sha:$sha,branch:$branch}' \
-            pnpm-lock.yaml > /tmp/lockfile-update.json
-          gh api --method PUT "repos/${REPO}/contents/pnpm-lock.yaml" \
-            --input /tmp/lockfile-update.json >/dev/null
