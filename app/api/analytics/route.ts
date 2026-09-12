@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 export const runtime = 'nodejs'
 export const maxDuration = 60
 
-// Vercel/Cloudflare-style analytics endpoint
+// Cloudflare-oriented analytics endpoint
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const range = searchParams.get('range') || '24h'

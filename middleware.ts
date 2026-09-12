@@ -9,12 +9,12 @@ const securityHeaders = {
   // CSP - Strict content security policy
   'Content-Security-Policy': [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://vercel.live",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https: http:",
     "font-src 'self' data:",
-    "connect-src 'self' https://api.stripe.com https://*.vercel.app https://*.vercel-insights.com wss:",
-    "frame-src 'self' https://js.stripe.com https://vercel.live",
+    "connect-src 'self' https://api.stripe.com wss:",
+    "frame-src 'self' https://js.stripe.com",
     "frame-ancestors 'none'",
     "form-action 'self'",
     "base-uri 'self'",

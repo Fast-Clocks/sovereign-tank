@@ -1,12 +1,8 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
 import { DataCollectionNotice } from '@/components/data-collection-notice'
 import { AIAssistantChat } from '@/components/ai-assistant-chat'
 
 import './globals.css'
-
-const _inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const _jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains' })
 
 export const metadata: Metadata = {
   title: 'Australian Data Removal | Privacy Protection Services',
@@ -23,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${_inter.variable} ${_jetbrainsMono.variable}`}>
+    <html lang="en">
       <body className="font-sans antialiased min-h-screen">
         {children}
         <DataCollectionNotice />

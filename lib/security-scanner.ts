@@ -560,7 +560,7 @@ export async function runEssentialEightScan(): Promise<EssentialEightCheck[]> {
       maturityLevel: 3,
       status: 'IMPLEMENTED',
       findings: [
-        'Vercel managed infrastructure',
+        'Managed Cloudflare-compatible infrastructure',
         'Automatic OS patching',
       ],
     },

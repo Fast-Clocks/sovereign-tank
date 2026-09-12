@@ -9,7 +9,7 @@ Sovereign Tank is a demonstration surface — not a company, not a platform, not
 - **Original name in package.json:** `my-project` (v0.dev default — never renamed).
 - **GitHub repo:** `Fast-Clocks/sovereign-tank`
 - **Relationship:** Shares visual DNA with `v0-sovereignty-lab-ui` (Sovereignty Lab). Both descend from the same v0.dev generation but diverged. sovereign-tank was forked into its own repo as the showcase/demo surface. v0-sovereignty-lab-ui remained the deployed lab UI.
-- **Vercel:** No Vercel project currently mapped. Previously associated with sovereignty domains but DNS was never correctly wired.
+- **Deployment target:** Cloudflare-managed domain routing and workflow integration are the intended deployment path for this demo surface.
 - **Framework:** Next.js (App Router)
 - **UI:** shadcn/ui + Tailwind CSS
 
@@ -33,7 +33,7 @@ Per the governing build order:
 ## Compliance status
 
 - **Word-risk:** Scanned against BUILD_STANDARD_data-privacy-compliance.md. One prohibited claim fixed (`Guaranteed protections` → `Consumer protections awareness`).
-- **External calls:** Google Fonts CDN removed from CSP middleware. jsdelivr CDN reference remains for world-atlas topological data (geo-map component) — acceptable for demo surface, would need local bundling for production.
+- **External calls:** Build-time Google Fonts fetching and the jsdelivr world-atlas dependency have been removed from the demo surface to keep deployment self-contained.
 - **Analytics:** None.
 - **Demo data:** API endpoints return simulated/mock data. No production receipts. No live backend writes.
 
