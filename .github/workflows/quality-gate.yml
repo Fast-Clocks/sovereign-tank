@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
@@ -15,13 +15,13 @@ concurrency:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - name: Checkout exact PR head
+      - name: Checkout exact source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: claude/security-and-quality-gate
+          persist-credentials: false
 
       - name: Set up pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
@@ -33,39 +33,6 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-
-      - name: Generate patched dependency graph
-        shell: bash
-        run: |
-          set -euo pipefail
-          pnpm pkg set "pnpm.overrides.js-yaml=4.3.2"
-          pnpm update next@16.3.3 eslint-config-next@16.3.3 browserslist@4.28.7 sharp@0.35.4 --save-exact --lockfile-only
-          pnpm install --lockfile-only
-
-      - name: Verify repair changed only dependency manifests
-        shell: bash
-        run: |
-          set -euo pipefail
-          unexpected="$(git status --porcelain | awk '{print $2}' | grep -Ev '^(package.json|pnpm-lock.yaml)$' || true)"
-          if [ -n "$unexpected" ]; then
-            echo "Unexpected changed paths:"
-            echo "$unexpected"
-            exit 1
-          fi
-
-      - name: Commit dependency repair if required
-        shell: bash
-        run: |
-          set -euo pipefail
-          if git diff --quiet -- package.json pnpm-lock.yaml; then
-            echo "Dependency graph already repaired."
-            exit 0
-          fi
-          git config user.name "APN Security Gate"
-          git config user.email "288131154+Fast-Clocks@users.noreply.github.com"
-          git add package.json pnpm-lock.yaml
-          git commit -m "security: close transitive js-yaml advisory"
-          git push origin HEAD:claude/security-and-quality-gate
 
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
