@@ -11,6 +11,9 @@ const _jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-je
 export const metadata: Metadata = {
   title: 'Australian Data Removal | Privacy Protection Services',
   description: 'Programmatic enforcement of your digital privacy rights across Australian and global data brokers in compliance with the Privacy Act 1988 (Cth).',
+  other: {
+    'base:app_id': '6aa5ac4f934ceaddfd7ac2a6',
+  },
 }
 
 export const viewport: Viewport = {
