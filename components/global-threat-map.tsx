@@ -52,6 +52,15 @@ function projectCoordinates([longitude, latitude]: [number, number]) {
   }
 }
 
+function projectCoordinatesAsPercent(coordinates: [number, number]) {
+  const { x, y } = projectCoordinates(coordinates)
+
+  return {
+    left: `${(x / MAP_WIDTH) * 100}%`,
+    top: `${(y / MAP_HEIGHT) * 100}%`,
+  }
+}
+
 function getNodeColor(status: ThreatStatus) {
   switch (status) {
     case 'hostile':
@@ -107,6 +116,7 @@ function ThreatMapComponent({ onNodeClick, className = '' }: ThreatMapProps) {
   }, [onNodeClick])
 
   const activeThreatNode = threatNodes.find((node) => node.id === activeNode) ?? threatNodes.find((node) => node.id === COMMAND_CENTER_ID)!
+  const commandCenterCoordinates = threatNodes.find((node) => node.id === COMMAND_CENTER_ID)!.coordinates
 
   return (
     <div className={`bg-zinc-950 border border-zinc-800 ${className}`}>
@@ -230,78 +240,8 @@ function ThreatMapComponent({ onNodeClick, className = '' }: ThreatMapProps) {
             )
           })}
 
-          {threatNodes.map((node) => {
-            const { x, y } = projectCoordinates(node.coordinates)
-            const isActive = activeThreatNode.id === node.id
-            const pulseRadius = node.status === 'hostile' ? 16 + Math.sin(pulsePhase * 0.1) * 4 : 10 + Math.sin(pulsePhase * 0.05) * 2
-
-            return (
-              <g
-                key={node.id}
-                role="button"
-                tabIndex={0}
-                aria-label={`Threat node ${node.name}`}
-                className="cursor-pointer"
-                onClick={() => handleNodeClick(node.id)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault()
-                    handleNodeClick(node.id)
-                  }
-                }}
-              >
-                <circle
-                  cx={x}
-                  cy={y}
-                  r={isActive ? pulseRadius + 4 : pulseRadius}
-                  fill="transparent"
-                  stroke={getNodeColor(node.status)}
-                  strokeWidth={isActive ? 2.5 : 1.25}
-                  opacity={isActive ? 0.5 : 0.25}
-                />
-                <circle
-                  cx={x}
-                  cy={y}
-                  r="7"
-                  fill="transparent"
-                  stroke={getNodeColor(node.status)}
-                  strokeWidth="1.5"
-                  opacity="0.65"
-                />
-                <circle
-                  cx={x}
-                  cy={y}
-                  r="3.5"
-                  fill={getNodeColor(node.status)}
-                  className={node.status === 'hostile' ? 'animate-pulse' : ''}
-                />
-                <text
-                  x={x}
-                  y={y - 18}
-                  textAnchor="middle"
-                  fontFamily="monospace"
-                  fontSize="11"
-                  fontWeight="700"
-                  fill={getNodeColor(node.status)}
-                >
-                  {node.name}
-                </text>
-                <text
-                  x={x}
-                  y={y + 24}
-                  textAnchor="middle"
-                  fontFamily="monospace"
-                  fontSize="10"
-                  fill="#71717a"
-                >
-                  {node.threats}
-                </text>
-              </g>
-            )
-          })}
-
           {(() => {
-            const { x, y } = projectCoordinates([115.8605, -31.9505])
+            const { x, y } = projectCoordinates(commandCenterCoordinates)
 
             return (
               <g aria-hidden="true">
@@ -327,6 +267,66 @@ function ThreatMapComponent({ onNodeClick, className = '' }: ThreatMapProps) {
             )
           })()}
         </svg>
+
+        <div className="absolute inset-0 z-20">
+          {threatNodes.map((node) => {
+            const position = projectCoordinatesAsPercent(node.coordinates)
+            const isActive = activeThreatNode.id === node.id
+            const pulseSize = node.status === 'hostile' ? 40 + Math.sin(pulsePhase * 0.1) * 8 : 28 + Math.sin(pulsePhase * 0.05) * 4
+
+            return (
+              <button
+                key={node.id}
+                type="button"
+                aria-label={`Threat node ${node.name}`}
+                aria-pressed={isActive}
+                className="absolute h-20 w-20 -translate-x-1/2 -translate-y-1/2 bg-transparent"
+                style={{ left: position.left, top: position.top }}
+                onClick={() => handleNodeClick(node.id)}
+              >
+                <span
+                  aria-hidden="true"
+                  className="absolute left-1/2 top-1/2 rounded-full border"
+                  style={{
+                    width: `${isActive ? pulseSize + 8 : pulseSize}px`,
+                    height: `${isActive ? pulseSize + 8 : pulseSize}px`,
+                    transform: 'translate(-50%, -50%)',
+                    borderColor: getNodeColor(node.status),
+                    borderWidth: isActive ? '2.5px' : '1.25px',
+                    opacity: isActive ? 0.5 : 0.25,
+                  }}
+                />
+                <span
+                  aria-hidden="true"
+                  className="absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border"
+                  style={{
+                    borderColor: getNodeColor(node.status),
+                    borderWidth: '1.5px',
+                    opacity: 0.65,
+                  }}
+                />
+                <span
+                  aria-hidden="true"
+                  className={`absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full ${node.status === 'hostile' ? 'animate-pulse' : ''}`}
+                  style={{ backgroundColor: getNodeColor(node.status) }}
+                />
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-1/2 top-[calc(50%-1.15rem)] -translate-x-1/2 -translate-y-full text-[11px] font-bold"
+                  style={{ color: getNodeColor(node.status) }}
+                >
+                  {node.name}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-1/2 top-[calc(50%+1.15rem)] -translate-x-1/2 text-[10px] text-zinc-500"
+                >
+                  {node.threats}
+                </span>
+              </button>
+            )
+          })}
+        </div>
 
         <div className="absolute bottom-4 left-4 border border-zinc-800 bg-black/80 p-3 backdrop-blur-sm">
           <p className="mb-2 text-[9px] font-mono font-bold tracking-wider text-zinc-500">NODE.STATUS</p>

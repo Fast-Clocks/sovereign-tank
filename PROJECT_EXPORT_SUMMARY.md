@@ -228,14 +228,14 @@ v0-ausdataremoval-com-au/
 
 ## DEPLOYMENT
 
-**Vercel Project:** `v0-ausdataremoval-com-au`  
-**Team:** `australianprivacynetwork`  
-**Team ID:** `team_jlqDGwUElYe63eZr9WzkNwDe`  
+**Deployment Target:** Cloudflare-managed domain routing into the multi-cell platform  
+**Status:** Deployment wiring should be maintained outside this export summary  
+**Boundary:** Keep commercial infrastructure details locked to the maintained platform workflow  
 
 **To Deploy:**
-1. Click "Publish" in v0 interface
-2. Live URL: `v0-ausdataremoval-com-au.vercel.app`
-3. Add custom domain: `ausdataremoval.com.au` in Vercel dashboard
+1. Build and scan in the maintained workflow
+2. Attach the production domain through the Cloudflare-managed deployment path
+3. Route traffic into the multi-cell platform
 
 ---
 
@@ -244,8 +244,8 @@ v0-ausdataremoval-com-au/
 - **Framework:** Next.js 16 (App Router, Turbopack)
 - **React:** v19.2.3 with Server Components
 - **UI:** shadcn/ui (50+ components), Tailwind CSS 4
-- **AI:** Vercel AI SDK 6, multi-provider support
-- **Maps:** react-simple-maps (D3-based topology)
+- **AI:** AI SDK 6, multi-provider support
+- **Maps:** self-contained SVG threat map
 - **Charts:** Recharts with custom tooltips
 - **Forms:** React Hook Form + Zod validation
 - **State:** SWR for client-side data fetching
@@ -269,7 +269,7 @@ v0-ausdataremoval-com-au/
 
 ---
 
-**Built by:** Vercel v0 AI Platform  
+**Built by:** Sovereign engineering workflow  
 **For:** Australian Data Removal (ADR) - Privacy Protection Services  
 **License:** Private - Australian Privacy Network  
 **Contact:** hello@ausdataremoval.com.au | 1300 504 079  
