@@ -66,21 +66,16 @@ export function AICommandTerminal({ className = '' }: { className?: string }) {
   ])
   const [inputValue, setInputValue] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
-  const providerRef = useRef<AIProvider>(provider)
   const terminalRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    providerRef.current = provider
-  }, [provider])
 
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
         api: '/api/ai/chat',
-        body: () => ({ provider: providerRef.current }),
+        body: () => ({ provider }),
       }),
-    [],
+    [provider],
   )
 
   const { messages, sendMessage, status } = useChat({
