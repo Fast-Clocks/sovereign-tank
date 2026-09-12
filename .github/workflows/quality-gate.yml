@@ -35,7 +35,12 @@ jobs:
           cache: pnpm
 
       - name: Generate patched dependency graph
-        run: pnpm update next@16.3.3 eslint-config-next@16.3.3 browserslist@4.28.7 sharp@0.35.4 --save-exact --lockfile-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm pkg set "pnpm.overrides.js-yaml=4.3.2"
+          pnpm update next@16.3.3 eslint-config-next@16.3.3 browserslist@4.28.7 sharp@0.35.4 --save-exact --lockfile-only
+          pnpm install --lockfile-only
 
       - name: Verify repair changed only dependency manifests
         shell: bash
@@ -59,7 +64,7 @@ jobs:
           git config user.name "APN Security Gate"
           git config user.email "288131154+Fast-Clocks@users.noreply.github.com"
           git add package.json pnpm-lock.yaml
-          git commit -m "security: patch audited dependency graph"
+          git commit -m "security: close transitive js-yaml advisory"
           git push origin HEAD:claude/security-and-quality-gate
 
       - name: Install locked dependencies
