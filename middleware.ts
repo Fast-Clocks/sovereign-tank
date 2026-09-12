@@ -13,7 +13,7 @@ const securityHeaders = {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https: http:",
     "font-src 'self' data:",
-    "connect-src 'self' https://api.stripe.com",
+    "connect-src 'self' https:",
     "frame-src 'self' https://js.stripe.com",
     "frame-ancestors 'none'",
     "form-action 'self'",

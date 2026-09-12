@@ -194,7 +194,7 @@ function ThreatMapComponent({ onNodeClick, className = '' }: ThreatMapProps) {
         <svg
           viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
           className="h-auto w-full bg-[radial-gradient(circle_at_center,_rgba(250,204,21,0.08),_transparent_55%)]"
-          aria-label="Global threat map"
+          aria-hidden="true"
         >
           <rect x="0" y="0" width={MAP_WIDTH} height={MAP_HEIGHT} fill="transparent" />
 
