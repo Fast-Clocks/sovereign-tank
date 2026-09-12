@@ -41,9 +41,11 @@ const threatNodes: ThreatNode[] = [
   { id: 'cn-east', name: 'CN-EAST', coordinates: [121.4737, 31.2304], threats: 1247, status: 'hostile' },
 ]
 
+const commandCenterNode = threatNodes.find((node) => node.id === COMMAND_CENTER_ID)!
+
 const attackVectors = threatNodes
   .filter((node) => node.id !== COMMAND_CENTER_ID && node.status === 'hostile')
-  .map((node) => ({ from: node.coordinates, to: threatNodes.find((candidate) => candidate.id === COMMAND_CENTER_ID)!.coordinates }))
+  .map((node) => ({ from: node.coordinates, to: commandCenterNode.coordinates }))
 
 function projectCoordinates([longitude, latitude]: [number, number]) {
   return {
@@ -122,8 +124,8 @@ function ThreatMapComponent({ onNodeClick, className = '' }: ThreatMapProps) {
     onNodeClick?.(nodeId)
   }, [onNodeClick])
 
-  const activeThreatNode = threatNodes.find((node) => node.id === activeNode) ?? threatNodes.find((node) => node.id === COMMAND_CENTER_ID)!
-  const commandCenterCoordinates = threatNodes.find((node) => node.id === COMMAND_CENTER_ID)!.coordinates
+  const activeThreatNode = threatNodes.find((node) => node.id === activeNode) ?? commandCenterNode
+  const commandCenterCoordinates = commandCenterNode.coordinates
 
   return (
     <div className={`bg-zinc-950 border border-zinc-800 ${className}`}>
