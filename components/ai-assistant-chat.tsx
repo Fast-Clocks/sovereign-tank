@@ -37,20 +37,15 @@ export function AIAssistantChat({ className = '' }: { className?: string }) {
   const [isMinimized, setIsMinimized] = useState(false)
   const [provider, setProvider] = useState<AIProvider>('openai')
   const [input, setInput] = useState('')
-  const providerRef = useRef<AIProvider>(provider)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    providerRef.current = provider
-  }, [provider])
 
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
         api: '/api/ai/chat',
-        body: () => ({ provider: providerRef.current }),
+        body: () => ({ provider }),
       }),
-    [],
+    [provider],
   )
 
   const { messages, sendMessage, status } = useChat({
