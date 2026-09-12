@@ -34,7 +34,18 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: Install locked dependencies
+      - name: Regenerate lockfile from committed dependency policy
+        run: pnpm install --lockfile-only --no-frozen-lockfile
+
+      - name: Preserve regenerated lockfile
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: sovereign-tank-lockfile-${{ github.sha }}
+          path: pnpm-lock.yaml
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Install regenerated locked dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Lint
