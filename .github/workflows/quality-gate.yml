@@ -66,9 +66,11 @@ jobs:
           set -euo pipefail
           current_sha="$(gh api "repos/${REPO}/contents/pnpm-lock.yaml?ref=${BRANCH}" --jq .sha)"
           test "$current_sha" = "$EXPECTED_LOCK_SHA"
-          content="$(base64 -w0 pnpm-lock.yaml)"
+          jq -Rs \
+            --arg message 'security: commit verified consolidated lockfile' \
+            --arg sha "$current_sha" \
+            --arg branch "$BRANCH" \
+            '{message:$message,content:(@base64),sha:$sha,branch:$branch}' \
+            pnpm-lock.yaml > /tmp/lockfile-update.json
           gh api --method PUT "repos/${REPO}/contents/pnpm-lock.yaml" \
-            -f message='security: commit verified consolidated lockfile' \
-            -f content="$content" \
-            -f sha="$current_sha" \
-            -f branch="$BRANCH" >/dev/null
+            --input /tmp/lockfile-update.json >/dev/null
