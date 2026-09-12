@@ -17,13 +17,13 @@ interface ThreatNode {
   status: ThreatStatus
 }
 
-const worldRegions = [
-  'M76 124 L114 94 L176 82 L224 102 L256 136 L252 184 L214 214 L164 216 L112 184 L88 150 Z',
-  'M246 234 L282 220 L314 236 L330 282 L312 336 L282 390 L246 420 L220 394 L216 336 L228 274 Z',
-  'M392 98 L462 82 L548 88 L628 116 L688 162 L694 228 L656 258 L604 248 L566 212 L532 196 L486 200 L450 184 L420 154 Z',
-  'M476 212 L526 224 L562 264 L548 306 L504 322 L458 304 L440 262 Z',
-  'M676 296 L724 276 L778 292 L818 328 L800 362 L734 376 L688 354 L662 324 Z',
-  'M774 388 L810 380 L836 396 L826 426 L794 434 L766 418 Z',
+const worldRegions: [number, number][][] = [
+  [[-168, 72], [-144, 72], [-126, 58], [-108, 54], [-94, 50], [-76, 42], [-60, 28], [-72, 12], [-102, 8], [-126, 18], [-146, 30], [-160, 52], [-168, 64]],
+  [[-82, 12], [-66, 10], [-52, -6], [-48, -22], [-54, -38], [-66, -56], [-78, -44], [-82, -10]],
+  [[-12, 72], [18, 70], [54, 68], [88, 64], [118, 56], [148, 48], [164, 32], [166, 12], [132, 6], [108, 20], [84, 24], [58, 16], [32, 22], [8, 36], [-8, 48], [-12, 62]],
+  [[-18, 34], [6, 36], [24, 24], [34, 6], [28, -20], [12, -34], [-8, -30], [-16, -4]],
+  [[112, -10], [132, -12], [154, -24], [154, -40], [136, -44], [114, -34], [110, -18]],
+  [[-54, 82], [-26, 78], [-16, 66], [-30, 58], [-50, 62], [-60, 72]],
 ]
 
 const threatNodes: ThreatNode[] = [
@@ -59,6 +59,13 @@ function projectCoordinatesAsPercent(coordinates: [number, number]) {
     left: `${(x / MAP_WIDTH) * 100}%`,
     top: `${(y / MAP_HEIGHT) * 100}%`,
   }
+}
+
+function buildRegionPath(points: [number, number][]) {
+  return `${points.map((point, index) => {
+    const { x, y } = projectCoordinates(point)
+    return `${index === 0 ? 'M' : 'L'}${x} ${y}`
+  }).join(' ')} Z`
 }
 
 function getNodeColor(status: ThreatStatus) {
@@ -153,6 +160,10 @@ function ThreatMapComponent({ onNodeClick, className = '' }: ThreatMapProps) {
         </div>
       </div>
 
+      <p className="sr-only" role="status" aria-live="polite">
+        Active threat node {activeThreatNode.name} is {activeThreatNode.status} with {activeThreatNode.threats.toLocaleString()} tracked events.
+      </p>
+
       <div className="relative overflow-hidden">
         <div
           className="pointer-events-none absolute inset-0 z-10 opacity-30"
@@ -209,10 +220,10 @@ function ThreatMapComponent({ onNodeClick, className = '' }: ThreatMapProps) {
             />
           ))}
 
-          {worldRegions.map((path, index) => (
+          {worldRegions.map((points, index) => (
             <path
               key={`region-${index}`}
-              d={path}
+              d={buildRegionPath(points)}
               fill="rgba(24,24,27,0.95)"
               stroke="rgba(63,63,70,0.9)"
               strokeWidth="3"
