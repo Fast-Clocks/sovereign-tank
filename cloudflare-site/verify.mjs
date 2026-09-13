@@ -22,7 +22,7 @@ const assertions = [
   [html.includes('local demo ledger'), 'demo ledger is explicit'],
   [html.includes('not automated certification'), 'commercial scope is bounded'],
   [js.includes('25*1024*1024'), 'browser demo file cap is 25 MB'],
-  [js.includes('bubble.textContent = html'), 'user assistant input is rendered as text'],
+  [js.includes('bubble.textContent=text') && !js.includes('innerHTML'), 'user assistant input is rendered as text'],
   [worker.includes("script-src 'self'"), 'CSP blocks inline/external scripts'],
   [worker.includes("connect-src 'none'"), 'demo makes no runtime network connections'],
   [worker.includes("frame-ancestors 'none'"), 'clickjacking protection'],

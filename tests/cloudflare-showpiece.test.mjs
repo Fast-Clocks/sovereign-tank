@@ -22,7 +22,8 @@ test('public demo stays local and does not pretend to be a live ledger', () => {
   assert.doesNotMatch(html, /live ledger/i)
   assert.match(html, /local demo ledger/i)
   assert.match(js, /25\*1024\*1024/)
-  assert.match(js, /bubble\.textContent = html/)
+  assert.match(js, /bubble\.textContent=text/)
+  assert.doesNotMatch(js, /innerHTML/)
   assert.doesNotMatch(js, /connects to live AI/i)
 })
 
