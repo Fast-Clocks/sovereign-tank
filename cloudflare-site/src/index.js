@@ -8,7 +8,7 @@ const SECURITY_HEADERS = {
   'Cross-Origin-Resource-Policy': 'same-origin',
 };
 
-export default {
+const worker = {
   async fetch(request, env) {
     if (request.method !== 'GET' && request.method !== 'HEAD') {
       return new Response('Method Not Allowed', {
@@ -37,3 +37,5 @@ export default {
     });
   },
 };
+
+export default worker;
