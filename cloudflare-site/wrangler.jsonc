@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
+  "name": "sovereign-tank",
+  "account_id": "f7c8702f5256dcb45ef114533e872e2e",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-14",
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    "directory": "./site",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  }
+}
