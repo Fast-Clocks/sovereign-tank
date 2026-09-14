@@ -1,0 +1,54 @@
+name: Deploy Sovereign Tank to Cloudflare
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "cloudflare-site/**"
+      - ".github/workflows/deploy-cloudflare.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sovereign-tank-cloudflare-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Verify release source
+        run: |
+          set -euo pipefail
+          node cloudflare-site/verify.mjs
+          node --check cloudflare-site/site/app.js
+          node --check cloudflare-site/src/index.js
+
+      - name: Require Cloudflare token
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN production/repository secret is missing"; exit 1; }
+
+      - name: Deploy exact Cloudflare candidate
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.131.1 deploy --config cloudflare-site/wrangler.jsonc
+
+      - name: Record deployed source
+        run: |
+          printf 'SOURCE_SHA=%s\n' "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          printf 'WORKER=sovereign-tank\n' >> "$GITHUB_STEP_SUMMARY"
+          printf 'CLOUDFLARE_ACCOUNT=f7c8702f5256dcb45ef114533e872e2e\n' >> "$GITHUB_STEP_SUMMARY"
