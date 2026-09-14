@@ -41,7 +41,7 @@ test('Tank v1 exposes the approved limited-edition build menu and provenance cer
   assert.match(html, /Build your Tank/i)
   assert.match(html, /Limited Edition No\. 001/i)
   assert.match(html, /Sovereign Engine proof core/i)
-  assert.match(html, /Certificate of Build & Provenance/i)
+  assert.match(html, /Certificate of Build (?:&|&amp;) Provenance/i)
   assert.match(html, /ST-LE-001/)
   assert.match(html, /Blockchain bridge/i)
   assert.match(html, /Custom soundtrack/i)
