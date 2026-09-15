@@ -24,7 +24,7 @@ const worker = {
     }
 
     const host = new URL(request.url).hostname.toLowerCase();
-    if (host === 'sovereigntank.com' || host === 'www.sovereigntank.com') {
+    if (host === 'sovereigntank.au' || host === 'www.sovereigntank.au') {
       headers.set('X-Robots-Tag', 'index, follow');
     } else {
       headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');

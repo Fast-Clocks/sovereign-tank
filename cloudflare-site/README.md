@@ -14,9 +14,10 @@ Recovered showpiece donor SHA-256: `2b4bde967fb3c6f65a1aac88cac313b643f360d26c2d
 
 ## Cloudflare target
 
-- Account: A2 `f7c8702f5256dcb45ef114533e872e2e`
-- Worker: `sovereign-tank`
-- Initial release: `workers.dev` / preview only.
+- Existing Workers Builds account: `ce77d11eb9c9640fe37ed06ecfe260aa`.
+- Worker: `sovereign-tank`.
+- Production domain in current estate preflight: `sovereigntank.au` plus `www`.
+- Initial release remains `workers.dev` / preview until the deployment is proved healthy.
 - `wrangler.jsonc` deliberately contains **no custom domain route**. Domain attachment is a separate gate after exact provider before-state and rollback are captured.
 
 ## Verify locally
@@ -28,13 +29,11 @@ node --check cloudflare-site/src/index.js
 npm test
 ```
 
-## Exact provider preflight before first deploy
+## Exact provider preflight before deploy
 
-From an authenticated Cloudflare/Codex session:
-
-1. Confirm account ID is exactly `f7c8702f5256dcb45ef114533e872e2e`.
-2. Read Worker `sovereign-tank` before-state. If it already exists unexpectedly, **stop** and preserve its script/version/routes/bindings before doing anything.
-3. Confirm no custom domain or route for `sovereigntank.com` is being changed by the preview deploy.
+1. Confirm the connected Workers Builds account is exactly `ce77d11eb9c9640fe37ed06ecfe260aa` and the existing Worker is exactly `sovereign-tank`.
+2. Preserve the current Worker deployment/version/routes/bindings before promotion.
+3. Confirm no custom domain or route for `sovereigntank.au` or `www.sovereigntank.au` is changed by the preview deploy.
 4. Deploy only this candidate:
 
 ```bash
@@ -42,8 +41,8 @@ npx wrangler@4.131.1 deploy --config cloudflare-site/wrangler.jsonc
 ```
 
 5. Record Worker deployment/version and test the `workers.dev` URL on desktop/mobile, Base meta tag, document hashing, demo receipt, Stripe handoff, security headers and negative network checks.
-6. Only after the preview passes, prepare the separate `sovereigntank.com` + `www` attachment/cutover with authoritative DNS before-state and rollback. Do not guess nameservers or overwrite mail/service records.
+6. Only after the preview passes, prepare the separate `sovereigntank.au` + `www` attachment/cutover with authoritative DNS before-state and rollback. Do not guess nameservers or overwrite mail/service records.
 
 ## Rollback
 
-If this is a newly created Worker and preview verification fails, remove **only** the newly created `sovereign-tank` Worker after preserving the failed deployment receipt and verify that the prior absent state is restored. If provider preflight finds a pre-existing Worker, rollback must instead restore that exact prior version/configuration; do not delete it.
+If preview verification fails, preserve the failed deployment receipt and restore the exact prior Worker version/configuration. Do not delete the existing `sovereign-tank` Worker.

@@ -27,8 +27,9 @@ test('public demo stays local and does not pretend to be a live ledger', () => {
   assert.doesNotMatch(js, /connects to live AI/i)
 })
 
-test('Cloudflare candidate is isolated and bound to canonical A2', () => {
-  assert.match(wrangler, /f7c8702f5256dcb45ef114533e872e2e/)
+test('Cloudflare candidate is isolated and bound to the existing Workers Builds project', () => {
+  assert.match(wrangler, /ce77d11eb9c9640fe37ed06ecfe260aa/)
+  assert.doesNotMatch(wrangler, /f7c8702f5256dcb45ef114533e872e2e/)
   assert.match(wrangler, /"name": "sovereign-tank"/)
   assert.doesNotMatch(wrangler, /"routes?"\s*:/)
   assert.match(worker, /script-src 'self'/)
