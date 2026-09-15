@@ -1,14 +1,7 @@
 packages:
   - '.'
 
-allowBuilds:
-  unrs-resolver: set this to true or false
-
 # pnpm settings live HERE, not in package.json's `pnpm` field.
-#
-# pnpm 11 STOPPED READING the `pnpm` field in package.json. It warns and moves
-# on: "The 'pnpm' field in package.json is no longer read by pnpm. The following
-# keys were ignored: onlyBuiltDependencies, overrides."
 #
 # These overrides are the single dependency-policy source. Keep security pins
 # together here so regenerating the lockfile cannot silently replace one fix
