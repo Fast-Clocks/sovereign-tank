@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "cloudflare-site/**"
+      - ".wrangler/deploy/config.json"
+      - "pnpm-workspace.yaml"
       - ".github/workflows/deploy-cloudflare.yml"
   workflow_dispatch:
 
@@ -51,4 +53,4 @@ jobs:
         run: |
           printf 'SOURCE_SHA=%s\n' "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
           printf 'WORKER=sovereign-tank\n' >> "$GITHUB_STEP_SUMMARY"
-          printf 'CLOUDFLARE_ACCOUNT=f7c8702f5256dcb45ef114533e872e2e\n' >> "$GITHUB_STEP_SUMMARY"
+          printf 'CLOUDFLARE_ACCOUNT=ce77d11eb9c9640fe37ed06ecfe260aa\n' >> "$GITHUB_STEP_SUMMARY"
