@@ -13,14 +13,14 @@ const deployRedirect = readFileSync(new URL('../.wrangler/deploy/config.json', i
 
 const allPublic = [html, robots, sitemap, security, worker].join('\n')
 
-test('Sovereign Tank uses the current .au production domain everywhere', () => {
-  assert.doesNotMatch(allPublic, /sovereigntank\.com/)
-  assert.match(html, /https:\/\/sovereigntank\.au\//)
-  assert.match(robots, /https:\/\/sovereigntank\.au\/sitemap\.xml/)
-  assert.match(sitemap, /https:\/\/sovereigntank\.au\//)
-  assert.match(security, /https:\/\/sovereigntank\.au\/\.well-known\/security\.txt/)
-  assert.match(worker, /sovereigntank\.au/)
-  assert.match(worker, /www\.sovereigntank\.au/)
+test('Sovereign Tank uses the current .com production route everywhere', () => {
+  assert.doesNotMatch(allPublic, /sovereigntank\.au/)
+  assert.match(html, /https:\/\/sovereigntank\.com\//)
+  assert.match(robots, /https:\/\/sovereigntank\.com\/sitemap\.xml/)
+  assert.match(sitemap, /https:\/\/sovereigntank\.com\//)
+  assert.match(security, /https:\/\/sovereigntank\.com\/\.well-known\/security\.txt/)
+  assert.match(worker, /sovereigntank\.com/)
+  assert.match(worker, /www\.sovereigntank\.com/)
 })
 
 test('Wrangler targets the existing Cloudflare Workers Builds account', () => {
